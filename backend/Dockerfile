@@ -5,12 +5,10 @@ WORKDIR /app
 # Install OpenSSL for Prisma
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies (context = repo root)
+# Install dependencies (context = repo root; prisma first so postinstall can run)
 COPY backend/package.json backend/package-lock.json ./
-RUN npm ci
-
-# Copy prisma schema and generate client
 COPY backend/prisma ./prisma/
+RUN npm ci
 RUN npx prisma generate
 
 # Copy source and build
