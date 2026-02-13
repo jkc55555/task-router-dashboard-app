@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ItemType {
+  task
+  project
+  reference
+  waiting
+  someday
+  trash
+}
+
+enum ItemState {
+  INBOX
+  CLARIFYING
+  ACTIONABLE
+  PROJECT
+  WAITING
+  SNOOZED
+  SOMEDAY
+  REFERENCE
+  DONE
+  ARCHIVED
+}
+
+enum ContextTag {
+  calls
+  errands
+  computer
+  deep_work
+}
+
+enum EnergyLevel {
+  low
+  medium
+  high
+}
+
+enum ArtifactType {
+  draft
+  email
+  decision
+  note
+  file
+}
+
+enum ProjectStatus {
+  CLARIFYING
+  ACTIVE
+  WAITING
+  SOMEDAY
+  ON_HOLD
+  DONE
+  ARCHIVED
+}
+
+model Item {
+  id           String    @id @default(cuid())
+  title        String
+  body         String    @default("")
+  type         ItemType  @default(task)
+  state        ItemState @default(INBOX)
+  source       String    @default("manual")
+  waitingOn    String?
+  waitingSince DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  attachments  Json?
+  task         Task?
+  project      Project?
+  artifacts    Artifact[]
+  reminders    Reminder[]
+}
+
+model Task {
+  id               String    @id @default(cuid())
+  itemId           String?   @unique
+  item             Item?     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  actionText       String
+  context          ContextTag?
+  energy           EnergyLevel?
+  estimatedMinutes Int?
+  dueDate          DateTime?
+  projectId        String?
+  project          Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  priority         Int?      @default(0)
+  status           String    @default("active")
+  snoozedUntil     DateTime?
+  pinnedOrder      Int?
+  manualRank       Int?
+  unverified       Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  projectNextAction Project?  @relation("NextAction")
+}
+
+model Project {
+  id                String        @id @default(cuid())
+  itemId            String?       @unique
+  item              Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  outcomeStatement  String?
+  status            ProjectStatus @default(CLARIFYING)
+  nextActionTaskId  String?       @unique
+  nextActionTask    Task?         @relation("NextAction", fields: [nextActionTaskId], references: [id], onDelete: SetNull)
+  dueDate           DateTime?
+  reviewInterval    Int?
+  priority          Int?          @default(0)
+  focusThisWeek     Boolean       @default(false)
+  lastProgressAt    DateTime?
+  themeTag          String?
+  waitingOn         String?
+  waitingSince      DateTime?
+  followUpAt        DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  tasks             Task[]
+}
+
+model Artifact {
+  id           String       @id @default(cuid())
+  artifactType ArtifactType
+  content      String?
+  filePointer  String?
+  linkedItemId String
+  linkedItem   Item         @relation(fields: [linkedItemId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  itemId    String?
+  item      Item?    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  dueAt     DateTime
+  kind      String   @default("snooze")
+  createdAt DateTime @default(now())
+}
+
+model TransitionAuditLog {
+  id               String   @id @default(cuid())
+  itemId           String
+  fromState        String
+  toStateAttempted String
+  timestamp        DateTime @default(now())
+  actor            String
+  decision         String
+  reasons          Json?
+  override         Boolean  @default(false)
+  overrideReason   String?
+}
+
+enum ReviewSessionType {
+  DAILY
+  WEEKLY
+}
+
+model ReviewSession {
+  id                   String           @id @default(cuid())
+  type                 ReviewSessionType
+  startedAt            DateTime         @default(now())
+  completedAt          DateTime?
+  stepsCompleted       Json?
+  itemsProcessedCount  Int              @default(0)
+  itemsSkippedCount    Int              @default(0)
+}
+
+enum CalendarSourceKind {
+  ics_import
+  microsoft
+  google
+}
+
+model CalendarSource {
+  id           String             @id @default(cuid())
+  name         String
+  kind         CalendarSourceKind
+  config       Json?
+  lastSyncedAt DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  events       CalendarEvent[]
+}
+
+model CalendarEvent {
+  id               String         @id @default(cuid())
+  calendarSourceId String
+  calendarSource   CalendarSource @relation(fields: [calendarSourceId], references: [id], onDelete: Cascade)
+  externalId       String?
+  title            String
+  start            DateTime
+  end              DateTime
+  allDay           Boolean        @default(false)
+  description      String?
+  recurrenceRule   String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([calendarSourceId, externalId])
+  @@index([calendarSourceId, start, end])
+}
