@@ -325,6 +325,7 @@ export default function ProjectDetailPage() {
             <Button
               onClick={handleMarkDone}
               disabled={markDoneLoading || !markDoneConfirm}
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
             >
               {markDoneLoading ? "Saving…" : "Mark done"}
             </Button>

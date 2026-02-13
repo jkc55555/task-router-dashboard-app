@@ -146,7 +146,7 @@ export default function TaskCompletePage() {
         type="button"
         onClick={() => handleComplete()}
         disabled={loading}
-        className="rounded bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium disabled:opacity-50"
+        className="rounded bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 text-sm font-medium disabled:opacity-50"
       >
         Mark done
       </button>

@@ -33,12 +33,12 @@ export function DispositionButtons({
   return (
     <div className="flex flex-wrap gap-2">
       {onNextAction && (
-        <Button type="button" size="sm" onClick={onNextAction} className="bg-green-600 hover:bg-green-700 text-white">
+        <Button type="button" size="sm" onClick={onNextAction}>
           Make Next Action
         </Button>
       )}
       {onProject && (
-        <Button type="button" size="sm" onClick={onProject} className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button type="button" size="sm" onClick={onProject}>
           Make Project
         </Button>
       )}

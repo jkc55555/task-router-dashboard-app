@@ -202,7 +202,7 @@ export default function DailyReviewPage() {
                       {t.reasonTags?.length ? <span className="text-sm text-zinc-500 ml-2">{t.reasonTags.join(", ")}</span> : null}
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      <Link href={`/tasks/${t.id}/complete`} className="rounded bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-2 py-1 text-xs" onClick={() => markResolved(t.id)}>Done</Link>
+                      <Link href={`/tasks/${t.id}/complete`} className="rounded bg-accent text-accent-foreground hover:bg-accent/90 px-2 py-1 text-xs" onClick={() => markResolved(t.id)}>Done</Link>
                       <button type="button" onClick={() => { setSnoozeTaskId(t.id); }} className="rounded border px-2 py-1 text-xs">Snooze</button>
                       {t.itemId && <Link href={`/inbox/clarify/${t.itemId}`} className="rounded border px-2 py-1 text-xs">Edit</Link>}
                       <button type="button" onClick={async () => { await api.tasks.patch(t.id, { dueDate: null }); markResolved(t.id); const d = await api.reviews.getDailyStep("D2"); setStepData(d); }} className="rounded border px-2 py-1 text-xs">Remove due</button>
