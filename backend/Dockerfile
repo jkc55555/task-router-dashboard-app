@@ -5,16 +5,17 @@ WORKDIR /app
 # Install OpenSSL for Prisma
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
-COPY package.json package-lock.json ./
+# Install dependencies (context = repo root)
+COPY backend/package.json backend/package-lock.json ./
 RUN npm ci
 
 # Copy prisma schema and generate client
-COPY prisma ./prisma/
+COPY backend/prisma ./prisma/
 RUN npx prisma generate
 
 # Copy source and build
-COPY . .
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
 RUN npm run build
 
 # Production: run migrations then start
