@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { api, type ProjectStatus } from "@/lib/api";
 
 const STATUSES: ProjectStatus[] = ["CLARIFYING", "ACTIVE", "WAITING", "SOMEDAY", "ON_HOLD", "DONE", "ARCHIVED"];
@@ -45,6 +46,7 @@ export default function NewProjectPage() {
         priority,
         themeTag: themeTag.trim() || undefined,
       });
+      toast.success("Project created");
       router.push(`/projects/${project.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create project");

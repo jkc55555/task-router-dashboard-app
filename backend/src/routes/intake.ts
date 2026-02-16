@@ -33,8 +33,25 @@ const intakeBodySchema = z.object({
 
 export const intakeRouter = Router();
 
+/** Optional API key: if INTAKE_API_KEY is set, request must send it via Authorization: Bearer <key> or X-API-Key: <key>. */
+function checkIntakeApiKey(req: Request, res: Response, next: () => void): void {
+  const expected = process.env.INTAKE_API_KEY;
+  if (!expected) {
+    next();
+    return;
+  }
+  const authHeader = req.headers.authorization;
+  const bearer = authHeader && authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  const apiKey = bearer || (req.headers["x-api-key"] as string | undefined);
+  if (apiKey !== expected) {
+    res.status(401).json({ error: "Invalid or missing API key" });
+    return;
+  }
+  next();
+}
+
 /** POST /intake - canonical intake: create inbox item (title, body?, source?, attachments?). */
-intakeRouter.post("/intake", async (req: Request, res: Response) => {
+intakeRouter.post("/intake", checkIntakeApiKey, async (req: Request, res: Response) => {
   try {
     const parsed = intakeBodySchema.safeParse(req.body);
     if (!parsed.success) {

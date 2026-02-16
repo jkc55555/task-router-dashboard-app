@@ -71,3 +71,27 @@ Email is not implemented yet. When added, the connector should post messages to 
 - `metadata` (optional object)
 
 Use this endpoint for any external system (email, calendar, bots) that should create inbox items. File refs must be created first via **POST /intake/upload** if you have binary attachments.
+
+## Intake API key (optional)
+
+| Variable | Description |
+|----------|-------------|
+| `INTAKE_API_KEY` | If set, **POST /intake** requires the key in `Authorization: Bearer <key>` or `X-API-Key: <key>`. If unset, intake is unauthenticated. |
+
+Use this to restrict add-on and other intake calls to clients that know the secret. Gmail and Outlook add-ons can send the key via the header; set the same value in Script Properties (Gmail) or in `taskpane.js` (Outlook).
+
+## CORS and email add-ons
+
+| Variable | Description |
+|----------|-------------|
+| `CORS_ORIGIN` | Comma-separated list of allowed origins for browser requests. |
+
+- **Frontend:** Set to your frontend origin (e.g. `https://your-app.vercel.app`) so the web app can call the API.
+- **Outlook add-in:** The add-in taskpane runs in the Outlook client and sends `fetch()` to **POST /intake**. Add the Outlook and taskpane origins to `CORS_ORIGIN`, for example:
+  - `https://outlook.office.com`
+  - `https://outlook.office365.com`
+  - Your taskpane host (e.g. `https://your-app.vercel.app` if the taskpane is served from the same domain as the frontend).
+
+**Gmail add-on:** No CORS change needed; it runs on Google’s servers and calls your backend server-to-server.
+
+See repo `extensions/outlook-addin/README.md` and `extensions/gmail-addon/README.md` for add-on setup.
