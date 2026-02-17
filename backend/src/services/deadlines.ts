@@ -12,7 +12,7 @@ const endOfDay = (d: Date) => {
   return x;
 };
 
-export async function getDeadlines() {
+export async function getDeadlines(userId: string) {
   const now = new Date();
   const todayStart = startOfDay(now);
   const todayEnd = endOfDay(now);
@@ -23,6 +23,7 @@ export async function getDeadlines() {
 
   const tasksToday = await prisma.task.findMany({
     where: {
+      userId,
       dueDate: { gte: todayStart, lte: todayEnd },
       item: { state: { not: "DONE" } },
     },
@@ -31,6 +32,7 @@ export async function getDeadlines() {
 
   const tasksNext7 = await prisma.task.findMany({
     where: {
+      userId,
       dueDate: { gt: todayEnd, lte: endOfDay(day7) },
       item: { state: { not: "DONE" } },
     },
@@ -40,6 +42,7 @@ export async function getDeadlines() {
 
   const tasksNext30 = await prisma.task.findMany({
     where: {
+      userId,
       dueDate: { gt: endOfDay(day7), lte: endOfDay(day30) },
       item: { state: { not: "DONE" } },
     },
@@ -48,7 +51,7 @@ export async function getDeadlines() {
   });
 
   const projectsWithDue = await prisma.project.findMany({
-    where: { dueDate: { not: null } },
+    where: { userId, dueDate: { not: null } },
     include: { item: true },
   });
 
@@ -64,18 +67,21 @@ export async function getDeadlines() {
 
   const calendarToday = await prisma.calendarEvent.findMany({
     where: {
+      calendarSource: { userId },
       start: { gte: todayStart, lte: todayEnd },
     },
     orderBy: { start: "asc" },
   });
   const calendarNext7 = await prisma.calendarEvent.findMany({
     where: {
+      calendarSource: { userId },
       start: { gt: todayEnd, lte: endOfDay(day7) },
     },
     orderBy: { start: "asc" },
   });
   const calendarNext30 = await prisma.calendarEvent.findMany({
     where: {
+      calendarSource: { userId },
       start: { gt: endOfDay(day7), lte: endOfDay(day30) },
     },
     orderBy: { start: "asc" },

@@ -26,6 +26,7 @@ export type AggregateItem = {
 
 export type ItemMinAggregateOutputType = {
   id: string | null
+  userId: string | null
   title: string | null
   body: string | null
   type: $Enums.ItemType | null
@@ -39,6 +40,7 @@ export type ItemMinAggregateOutputType = {
 
 export type ItemMaxAggregateOutputType = {
   id: string | null
+  userId: string | null
   title: string | null
   body: string | null
   type: $Enums.ItemType | null
@@ -52,6 +54,7 @@ export type ItemMaxAggregateOutputType = {
 
 export type ItemCountAggregateOutputType = {
   id: number
+  userId: number
   title: number
   body: number
   type: number
@@ -68,6 +71,7 @@ export type ItemCountAggregateOutputType = {
 
 export type ItemMinAggregateInputType = {
   id?: true
+  userId?: true
   title?: true
   body?: true
   type?: true
@@ -81,6 +85,7 @@ export type ItemMinAggregateInputType = {
 
 export type ItemMaxAggregateInputType = {
   id?: true
+  userId?: true
   title?: true
   body?: true
   type?: true
@@ -94,6 +99,7 @@ export type ItemMaxAggregateInputType = {
 
 export type ItemCountAggregateInputType = {
   id?: true
+  userId?: true
   title?: true
   body?: true
   type?: true
@@ -181,6 +187,7 @@ export type ItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type ItemGroupByOutputType = {
   id: string
+  userId: string
   title: string
   body: string
   type: $Enums.ItemType
@@ -216,6 +223,7 @@ export type ItemWhereInput = {
   OR?: Prisma.ItemWhereInput[]
   NOT?: Prisma.ItemWhereInput | Prisma.ItemWhereInput[]
   id?: Prisma.StringFilter<"Item"> | string
+  userId?: Prisma.StringFilter<"Item"> | string
   title?: Prisma.StringFilter<"Item"> | string
   body?: Prisma.StringFilter<"Item"> | string
   type?: Prisma.EnumItemTypeFilter<"Item"> | $Enums.ItemType
@@ -226,6 +234,7 @@ export type ItemWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   attachments?: Prisma.JsonNullableFilter<"Item">
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   artifacts?: Prisma.ArtifactListRelationFilter
@@ -234,6 +243,7 @@ export type ItemWhereInput = {
 
 export type ItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -244,6 +254,7 @@ export type ItemOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attachments?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.UserOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   artifacts?: Prisma.ArtifactOrderByRelationAggregateInput
@@ -255,6 +266,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ItemWhereInput | Prisma.ItemWhereInput[]
   OR?: Prisma.ItemWhereInput[]
   NOT?: Prisma.ItemWhereInput | Prisma.ItemWhereInput[]
+  userId?: Prisma.StringFilter<"Item"> | string
   title?: Prisma.StringFilter<"Item"> | string
   body?: Prisma.StringFilter<"Item"> | string
   type?: Prisma.EnumItemTypeFilter<"Item"> | $Enums.ItemType
@@ -265,6 +277,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   attachments?: Prisma.JsonNullableFilter<"Item">
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   artifacts?: Prisma.ArtifactListRelationFilter
@@ -273,6 +286,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
 
 export type ItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -293,6 +307,7 @@ export type ItemScalarWhereWithAggregatesInput = {
   OR?: Prisma.ItemScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ItemScalarWhereWithAggregatesInput | Prisma.ItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Item"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"Item"> | string
   title?: Prisma.StringWithAggregatesFilter<"Item"> | string
   body?: Prisma.StringWithAggregatesFilter<"Item"> | string
   type?: Prisma.EnumItemTypeWithAggregatesFilter<"Item"> | $Enums.ItemType
@@ -317,6 +332,7 @@ export type ItemCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
   task?: Prisma.TaskCreateNestedOneWithoutItemInput
   project?: Prisma.ProjectCreateNestedOneWithoutItemInput
   artifacts?: Prisma.ArtifactCreateNestedManyWithoutLinkedItemInput
@@ -325,6 +341,7 @@ export type ItemCreateInput = {
 
 export type ItemUncheckedCreateInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -353,6 +370,7 @@ export type ItemUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   task?: Prisma.TaskUpdateOneWithoutItemNestedInput
   project?: Prisma.ProjectUpdateOneWithoutItemNestedInput
   artifacts?: Prisma.ArtifactUpdateManyWithoutLinkedItemNestedInput
@@ -361,6 +379,7 @@ export type ItemUpdateInput = {
 
 export type ItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
@@ -379,6 +398,7 @@ export type ItemUncheckedUpdateInput = {
 
 export type ItemCreateManyInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -407,6 +427,7 @@ export type ItemUpdateManyMutationInput = {
 
 export type ItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
@@ -419,8 +440,19 @@ export type ItemUncheckedUpdateManyInput = {
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
+export type ItemListRelationFilter = {
+  every?: Prisma.ItemWhereInput
+  some?: Prisma.ItemWhereInput
+  none?: Prisma.ItemWhereInput
+}
+
+export type ItemOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type ItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -435,6 +467,7 @@ export type ItemCountOrderByAggregateInput = {
 
 export type ItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -448,6 +481,7 @@ export type ItemMaxOrderByAggregateInput = {
 
 export type ItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -469,8 +503,46 @@ export type ItemScalarRelationFilter = {
   isNot?: Prisma.ItemWhereInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type ItemCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput> | Prisma.ItemCreateWithoutUserInput[] | Prisma.ItemUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutUserInput | Prisma.ItemCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ItemCreateManyUserInputEnvelope
+  connect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+}
+
+export type ItemUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput> | Prisma.ItemCreateWithoutUserInput[] | Prisma.ItemUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutUserInput | Prisma.ItemCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ItemCreateManyUserInputEnvelope
+  connect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+}
+
+export type ItemUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput> | Prisma.ItemCreateWithoutUserInput[] | Prisma.ItemUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutUserInput | Prisma.ItemCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ItemUpsertWithWhereUniqueWithoutUserInput | Prisma.ItemUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ItemCreateManyUserInputEnvelope
+  set?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  disconnect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  delete?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  connect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  update?: Prisma.ItemUpdateWithWhereUniqueWithoutUserInput | Prisma.ItemUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ItemUpdateManyWithWhereWithoutUserInput | Prisma.ItemUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ItemScalarWhereInput | Prisma.ItemScalarWhereInput[]
+}
+
+export type ItemUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput> | Prisma.ItemCreateWithoutUserInput[] | Prisma.ItemUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutUserInput | Prisma.ItemCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ItemUpsertWithWhereUniqueWithoutUserInput | Prisma.ItemUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ItemCreateManyUserInputEnvelope
+  set?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  disconnect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  delete?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  connect?: Prisma.ItemWhereUniqueInput | Prisma.ItemWhereUniqueInput[]
+  update?: Prisma.ItemUpdateWithWhereUniqueWithoutUserInput | Prisma.ItemUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ItemUpdateManyWithWhereWithoutUserInput | Prisma.ItemUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ItemScalarWhereInput | Prisma.ItemScalarWhereInput[]
 }
 
 export type EnumItemTypeFieldUpdateOperationsInput = {
@@ -481,16 +553,8 @@ export type EnumItemStateFieldUpdateOperationsInput = {
   set?: $Enums.ItemState
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 export type ItemCreateNestedOneWithoutTaskInput = {
@@ -555,6 +619,86 @@ export type ItemUpdateOneWithoutRemindersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ItemUpdateToOneWithWhereWithoutRemindersInput, Prisma.ItemUpdateWithoutRemindersInput>, Prisma.ItemUncheckedUpdateWithoutRemindersInput>
 }
 
+export type ItemCreateWithoutUserInput = {
+  id?: string
+  title: string
+  body?: string
+  type?: $Enums.ItemType
+  state?: $Enums.ItemState
+  source?: string
+  waitingOn?: string | null
+  waitingSince?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  task?: Prisma.TaskCreateNestedOneWithoutItemInput
+  project?: Prisma.ProjectCreateNestedOneWithoutItemInput
+  artifacts?: Prisma.ArtifactCreateNestedManyWithoutLinkedItemInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutItemInput
+}
+
+export type ItemUncheckedCreateWithoutUserInput = {
+  id?: string
+  title: string
+  body?: string
+  type?: $Enums.ItemType
+  state?: $Enums.ItemState
+  source?: string
+  waitingOn?: string | null
+  waitingSince?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  task?: Prisma.TaskUncheckedCreateNestedOneWithoutItemInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutItemInput
+  artifacts?: Prisma.ArtifactUncheckedCreateNestedManyWithoutLinkedItemInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutItemInput
+}
+
+export type ItemCreateOrConnectWithoutUserInput = {
+  where: Prisma.ItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput>
+}
+
+export type ItemCreateManyUserInputEnvelope = {
+  data: Prisma.ItemCreateManyUserInput | Prisma.ItemCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type ItemUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.ItemUpdateWithoutUserInput, Prisma.ItemUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.ItemCreateWithoutUserInput, Prisma.ItemUncheckedCreateWithoutUserInput>
+}
+
+export type ItemUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.ItemUpdateWithoutUserInput, Prisma.ItemUncheckedUpdateWithoutUserInput>
+}
+
+export type ItemUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.ItemScalarWhereInput
+  data: Prisma.XOR<Prisma.ItemUpdateManyMutationInput, Prisma.ItemUncheckedUpdateManyWithoutUserInput>
+}
+
+export type ItemScalarWhereInput = {
+  AND?: Prisma.ItemScalarWhereInput | Prisma.ItemScalarWhereInput[]
+  OR?: Prisma.ItemScalarWhereInput[]
+  NOT?: Prisma.ItemScalarWhereInput | Prisma.ItemScalarWhereInput[]
+  id?: Prisma.StringFilter<"Item"> | string
+  userId?: Prisma.StringFilter<"Item"> | string
+  title?: Prisma.StringFilter<"Item"> | string
+  body?: Prisma.StringFilter<"Item"> | string
+  type?: Prisma.EnumItemTypeFilter<"Item"> | $Enums.ItemType
+  state?: Prisma.EnumItemStateFilter<"Item"> | $Enums.ItemState
+  source?: Prisma.StringFilter<"Item"> | string
+  waitingOn?: Prisma.StringNullableFilter<"Item"> | string | null
+  waitingSince?: Prisma.DateTimeNullableFilter<"Item"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
+  attachments?: Prisma.JsonNullableFilter<"Item">
+}
+
 export type ItemCreateWithoutTaskInput = {
   id?: string
   title: string
@@ -567,6 +711,7 @@ export type ItemCreateWithoutTaskInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
   project?: Prisma.ProjectCreateNestedOneWithoutItemInput
   artifacts?: Prisma.ArtifactCreateNestedManyWithoutLinkedItemInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutItemInput
@@ -574,6 +719,7 @@ export type ItemCreateWithoutTaskInput = {
 
 export type ItemUncheckedCreateWithoutTaskInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -617,6 +763,7 @@ export type ItemUpdateWithoutTaskInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutItemNestedInput
   artifacts?: Prisma.ArtifactUpdateManyWithoutLinkedItemNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutItemNestedInput
@@ -624,6 +771,7 @@ export type ItemUpdateWithoutTaskInput = {
 
 export type ItemUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
@@ -651,6 +799,7 @@ export type ItemCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
   task?: Prisma.TaskCreateNestedOneWithoutItemInput
   artifacts?: Prisma.ArtifactCreateNestedManyWithoutLinkedItemInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutItemInput
@@ -658,6 +807,7 @@ export type ItemCreateWithoutProjectInput = {
 
 export type ItemUncheckedCreateWithoutProjectInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -701,6 +851,7 @@ export type ItemUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   task?: Prisma.TaskUpdateOneWithoutItemNestedInput
   artifacts?: Prisma.ArtifactUpdateManyWithoutLinkedItemNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutItemNestedInput
@@ -708,6 +859,7 @@ export type ItemUpdateWithoutProjectInput = {
 
 export type ItemUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
@@ -735,6 +887,7 @@ export type ItemCreateWithoutArtifactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
   task?: Prisma.TaskCreateNestedOneWithoutItemInput
   project?: Prisma.ProjectCreateNestedOneWithoutItemInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutItemInput
@@ -742,6 +895,7 @@ export type ItemCreateWithoutArtifactsInput = {
 
 export type ItemUncheckedCreateWithoutArtifactsInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -785,6 +939,7 @@ export type ItemUpdateWithoutArtifactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   task?: Prisma.TaskUpdateOneWithoutItemNestedInput
   project?: Prisma.ProjectUpdateOneWithoutItemNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutItemNestedInput
@@ -792,6 +947,7 @@ export type ItemUpdateWithoutArtifactsInput = {
 
 export type ItemUncheckedUpdateWithoutArtifactsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
@@ -819,6 +975,7 @@ export type ItemCreateWithoutRemindersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
   task?: Prisma.TaskCreateNestedOneWithoutItemInput
   project?: Prisma.ProjectCreateNestedOneWithoutItemInput
   artifacts?: Prisma.ArtifactCreateNestedManyWithoutLinkedItemInput
@@ -826,6 +983,7 @@ export type ItemCreateWithoutRemindersInput = {
 
 export type ItemUncheckedCreateWithoutRemindersInput = {
   id?: string
+  userId: string
   title: string
   body?: string
   type?: $Enums.ItemType
@@ -869,12 +1027,63 @@ export type ItemUpdateWithoutRemindersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   task?: Prisma.TaskUpdateOneWithoutItemNestedInput
   project?: Prisma.ProjectUpdateOneWithoutItemNestedInput
   artifacts?: Prisma.ArtifactUpdateManyWithoutLinkedItemNestedInput
 }
 
 export type ItemUncheckedUpdateWithoutRemindersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
+  state?: Prisma.EnumItemStateFieldUpdateOperationsInput | $Enums.ItemState
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  waitingOn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waitingSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  task?: Prisma.TaskUncheckedUpdateOneWithoutItemNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutItemNestedInput
+  artifacts?: Prisma.ArtifactUncheckedUpdateManyWithoutLinkedItemNestedInput
+}
+
+export type ItemCreateManyUserInput = {
+  id?: string
+  title: string
+  body?: string
+  type?: $Enums.ItemType
+  state?: $Enums.ItemState
+  source?: string
+  waitingOn?: string | null
+  waitingSince?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+}
+
+export type ItemUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
+  state?: Prisma.EnumItemStateFieldUpdateOperationsInput | $Enums.ItemState
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  waitingOn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waitingSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  task?: Prisma.TaskUpdateOneWithoutItemNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutItemNestedInput
+  artifacts?: Prisma.ArtifactUpdateManyWithoutLinkedItemNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutItemNestedInput
+}
+
+export type ItemUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -889,6 +1098,21 @@ export type ItemUncheckedUpdateWithoutRemindersInput = {
   task?: Prisma.TaskUncheckedUpdateOneWithoutItemNestedInput
   project?: Prisma.ProjectUncheckedUpdateOneWithoutItemNestedInput
   artifacts?: Prisma.ArtifactUncheckedUpdateManyWithoutLinkedItemNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutItemNestedInput
+}
+
+export type ItemUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
+  state?: Prisma.EnumItemStateFieldUpdateOperationsInput | $Enums.ItemState
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  waitingOn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waitingSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -933,6 +1157,7 @@ export type ItemCountOutputTypeCountRemindersArgs<ExtArgs extends runtime.Types.
 
 export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   title?: boolean
   body?: boolean
   type?: boolean
@@ -943,6 +1168,7 @@ export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   attachments?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   task?: boolean | Prisma.Item$taskArgs<ExtArgs>
   project?: boolean | Prisma.Item$projectArgs<ExtArgs>
   artifacts?: boolean | Prisma.Item$artifactsArgs<ExtArgs>
@@ -952,6 +1178,7 @@ export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type ItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   title?: boolean
   body?: boolean
   type?: boolean
@@ -962,10 +1189,12 @@ export type ItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   attachments?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["item"]>
 
 export type ItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   title?: boolean
   body?: boolean
   type?: boolean
@@ -976,10 +1205,12 @@ export type ItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   attachments?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["item"]>
 
 export type ItemSelectScalar = {
   id?: boolean
+  userId?: boolean
   title?: boolean
   body?: boolean
   type?: boolean
@@ -992,20 +1223,26 @@ export type ItemSelectScalar = {
   attachments?: boolean
 }
 
-export type ItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "type" | "state" | "source" | "waitingOn" | "waitingSince" | "createdAt" | "updatedAt" | "attachments", ExtArgs["result"]["item"]>
+export type ItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "body" | "type" | "state" | "source" | "waitingOn" | "waitingSince" | "createdAt" | "updatedAt" | "attachments", ExtArgs["result"]["item"]>
 export type ItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   task?: boolean | Prisma.Item$taskArgs<ExtArgs>
   project?: boolean | Prisma.Item$projectArgs<ExtArgs>
   artifacts?: boolean | Prisma.Item$artifactsArgs<ExtArgs>
   reminders?: boolean | Prisma.Item$remindersArgs<ExtArgs>
   _count?: boolean | Prisma.ItemCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type ItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
 
 export type $ItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Item"
   objects: {
+    user: Prisma.$UserPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs> | null
     project: Prisma.$ProjectPayload<ExtArgs> | null
     artifacts: Prisma.$ArtifactPayload<ExtArgs>[]
@@ -1013,6 +1250,7 @@ export type $ItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    userId: string
     title: string
     body: string
     type: $Enums.ItemType
@@ -1417,6 +1655,7 @@ readonly fields: ItemFieldRefs;
  */
 export interface Prisma__ItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.Item$taskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$taskArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.Item$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   artifacts<T extends Prisma.Item$artifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$artifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1451,6 +1690,7 @@ export interface Prisma__ItemClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface ItemFieldRefs {
   readonly id: Prisma.FieldRef<"Item", 'String'>
+  readonly userId: Prisma.FieldRef<"Item", 'String'>
   readonly title: Prisma.FieldRef<"Item", 'String'>
   readonly body: Prisma.FieldRef<"Item", 'String'>
   readonly type: Prisma.FieldRef<"Item", 'ItemType'>
@@ -1710,6 +1950,10 @@ export type ItemCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.ItemCreateManyInput | Prisma.ItemCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ItemIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1780,6 +2024,10 @@ export type ItemUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Items to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ItemIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

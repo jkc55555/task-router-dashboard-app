@@ -7,7 +7,13 @@ export const taskInclude = {
   projectNextAction: { include: { tasks: true } },
 };
 
-export async function getTask(id: string) {
+export async function getTask(id: string, userId?: string) {
+  if (userId) {
+    return prisma.task.findFirst({
+      where: { id, userId },
+      include: taskInclude,
+    });
+  }
   return prisma.task.findUnique({
     where: { id },
     include: taskInclude,
@@ -16,6 +22,7 @@ export async function getTask(id: string) {
 
 export async function patchTask(
   id: string,
+  userId: string,
   body: {
     pinnedOrder?: number | null;
     manualRank?: number | null;
@@ -27,7 +34,9 @@ export async function patchTask(
     dueDate?: string | null;
     priority?: number | null;
   }
-) {
+): Promise<Awaited<ReturnType<typeof getTask>> | null> {
+  const existing = await prisma.task.findFirst({ where: { id, userId }, select: { id: true } });
+  if (!existing) return null;
   const updates: Parameters<typeof prisma.task.update>[0]["data"] = {};
   if (body.pinnedOrder !== undefined) updates.pinnedOrder = body.pinnedOrder;
   if (body.manualRank !== undefined) updates.manualRank = body.manualRank;
@@ -48,10 +57,11 @@ export async function patchTask(
 }
 
 /** Only ACTIONABLE (snoozedUntil null or past) or project next actions. SNOOZED tasks are woken separately via wakeSnoozedTasks(). */
-export async function listActionableTasks() {
+export async function listActionableTasks(userId: string) {
   const now = new Date();
   return prisma.task.findMany({
     where: {
+      userId,
       status: "active",
       OR: [
         { item: { state: "ACTIONABLE" }, snoozedUntil: null },
@@ -65,10 +75,11 @@ export async function listActionableTasks() {
 }
 
 /** Transition items from SNOOZED to ACTIONABLE when snoozedUntil <= now. Returns task ids that were woken. */
-export async function wakeSnoozedTasks(): Promise<string[]> {
+export async function wakeSnoozedTasks(userId: string): Promise<string[]> {
   const now = new Date();
   const snoozed = await prisma.task.findMany({
     where: {
+      userId,
       status: "active",
       item: { state: "SNOOZED" },
       snoozedUntil: { lte: now },

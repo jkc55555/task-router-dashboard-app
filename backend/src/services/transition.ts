@@ -61,11 +61,13 @@ async function writeAudit(
   actor: string,
   reasons: Record<string, unknown> | null,
   override: boolean,
-  overrideReason: string | null
+  overrideReason: string | null,
+  userId?: string
 ) {
   await prisma.transitionAuditLog.create({
     data: {
       itemId,
+      userId: userId ?? undefined,
       fromState,
       toStateAttempted,
       decision,
@@ -82,12 +84,13 @@ async function writeAudit(
  */
 export async function executeTransition(
   itemId: string,
+  userId: string,
   targetState: ItemState,
   payload: TransitionPayload,
   actor: string,
   options: TransitionOptions = {}
 ): Promise<TransitionResult> {
-  const item = await itemsService.getItem(itemId);
+  const item = await itemsService.getItem(itemId, userId);
   if (!item) return { success: false, reason: "Item not found" };
 
   const currentState = item.state;
@@ -100,7 +103,8 @@ export async function executeTransition(
       actor,
       { reason: "transition_not_allowed" },
       false,
-      null
+      null,
+      userId
     );
     return { success: false, reason: `Transition from ${currentState} to ${targetState} is not allowed` };
   }
@@ -136,7 +140,7 @@ export async function executeTransition(
       if (item.task) {
         await prisma.task.update({ where: { id: item.task.id }, data: taskData });
       } else {
-        await prisma.task.create({ data: { itemId, ...taskData } });
+        await prisma.task.create({ data: { userId, itemId, ...taskData } });
       }
       await prisma.item.update({
         where: { id: itemId },
@@ -150,7 +154,8 @@ export async function executeTransition(
         actor,
         { reason: "deterministic_fail", ruleReason: rule.reason },
         false,
-        null
+        null,
+        userId
       );
       return {
         success: false,
@@ -175,7 +180,7 @@ export async function executeTransition(
         if (item.task) {
           await prisma.task.update({ where: { id: item.task.id }, data: taskData });
         } else {
-          await prisma.task.create({ data: { itemId, ...taskData } });
+          await prisma.task.create({ data: { userId, itemId, ...taskData } });
         }
         await prisma.item.update({
           where: { id: itemId },
@@ -189,7 +194,8 @@ export async function executeTransition(
           actor,
           { verifier: verifierResult.status, failures: verifierResult.failures },
           false,
-          null
+          null,
+          userId
         );
         return {
           success: false,
@@ -219,6 +225,7 @@ export async function executeTransition(
     } else {
       await prisma.task.create({
         data: {
+          userId,
           itemId,
           actionText: actionText.trim(),
           context: context ?? null,
@@ -240,25 +247,26 @@ export async function executeTransition(
       actor,
       { actionText, override: force },
       force,
-      overrideReason
+      overrideReason,
+      userId
     );
-    const updated = await itemsService.getItem(itemId);
-    const task = updated?.task ? await tasksService.getTask(updated.task.id) : null;
+    const updated = await itemsService.getItem(itemId, userId);
+    const task = updated?.task ? await tasksService.getTask(updated.task.id, userId) : null;
     return { success: true, item: updated!, task };
   }
 
   // --- Gate 2: To DONE ---
   if (targetState === "DONE") {
-    const task = item.task ? await tasksService.getTask(item.task.id) : null;
+    const task = item.task ? await tasksService.getTask(item.task.id, userId) : null;
     if (!task) {
-      await writeAudit(itemId, currentState, targetState, "rejected", actor, { reason: "no_task" }, false, null);
+      await writeAudit(itemId, currentState, targetState, "rejected", actor, { reason: "no_task" }, false, null, userId);
       return { success: false, reason: "Item has no task; cannot mark DONE" };
     }
 
     if (!force && task.itemId) {
       const hasEvidence = await artifactsService.hasEvidenceForItem(task.itemId);
       if (!hasEvidence) {
-        await writeAudit(itemId, currentState, targetState, "rejected", actor, { reason: "no_evidence" }, false, null);
+        await writeAudit(itemId, currentState, targetState, "rejected", actor, { reason: "no_evidence" }, false, null, userId);
         return {
           success: false,
           reason: "No draft artifact attached",
@@ -284,7 +292,8 @@ export async function executeTransition(
           actor,
           { verifier: verifierResult },
           false,
-          null
+          null,
+          userId
         );
         return {
           success: false,
@@ -329,10 +338,11 @@ export async function executeTransition(
       actor,
       { override: force, unverified: force },
       force,
-      overrideReason
+      overrideReason,
+      userId
     );
-    const updated = await itemsService.getItem(itemId);
-    const updatedTask = await tasksService.getTask(task.id);
+    const updated = await itemsService.getItem(itemId, userId);
+    const updatedTask = await tasksService.getTask(task.id, userId);
     return {
       success: true,
       item: updated!,
@@ -367,10 +377,10 @@ export async function executeTransition(
         data: { snoozedUntil: at },
       });
     }
-    await writeAudit(itemId, currentState, targetState, "approved", actor, { snoozedUntil: at.toISOString() }, false, null);
+    await writeAudit(itemId, currentState, targetState, "approved", actor, { snoozedUntil: at.toISOString() }, false, null, userId);
     if (item.task) await projectsService.syncProjectStateForNextActionTask(item.task.id, "SNOOZED");
-    const updated = await itemsService.getItem(itemId);
-    return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id) : null };
+    const updated = await itemsService.getItem(itemId, userId);
+    return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id, userId) : null };
   }
 
   // --- WAITING: set waitingOn, waitingSince, optional reminder ---
@@ -401,11 +411,12 @@ export async function executeTransition(
       actor,
       { waitingOn: payload.waitingOn, followUpAt: payload.followUpAt },
       false,
-      null
+      null,
+      userId
     );
     if (item.task) await projectsService.syncProjectStateForNextActionTask(item.task.id, "WAITING");
-    const updated = await itemsService.getItem(itemId);
-    return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id) : null };
+    const updated = await itemsService.getItem(itemId, userId);
+    return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id, userId) : null };
   }
 
   // --- Other transitions (CLARIFYING, ARCHIVED, PROJECT, REFERENCE, SOMEDAY) ---
@@ -413,10 +424,10 @@ export async function executeTransition(
     where: { id: itemId },
     data: { state: targetState },
   });
-  await writeAudit(itemId, currentState, targetState, "approved", actor, null, false, null);
+  await writeAudit(itemId, currentState, targetState, "approved", actor, null, false, null, userId);
   if (item.task && (targetState === "CLARIFYING" || targetState === "ARCHIVED" || targetState === "REFERENCE" || targetState === "SOMEDAY")) {
     await projectsService.syncProjectStateForNextActionTask(item.task.id, targetState);
   }
-  const updated = await itemsService.getItem(itemId);
-  return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id) : null };
+  const updated = await itemsService.getItem(itemId, userId);
+  return { success: true, item: updated!, task: item.task ? await tasksService.getTask(item.task.id, userId) : null };
 }

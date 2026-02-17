@@ -5,6 +5,23 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  theme        String?   // "light" | "dark" | "system"
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  items            Item[]
+  projects         Project[]
+  tasks            Task[]
+  calendarSources  CalendarSource[]
+  reviewSessions   ReviewSession[]
+  transitionAuditLogs TransitionAuditLog[]
 }
 
 enum ItemType {
@@ -62,6 +79,8 @@ enum ProjectStatus {
 
 model Item {
   id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   title        String
   body         String    @default("")
   type         ItemType  @default(task)
@@ -76,10 +95,15 @@ model Item {
   project      Project?
   artifacts    Artifact[]
   reminders    Reminder[]
+
+  @@index([userId])
+  @@index([userId, state])
 }
 
 model Task {
   id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   itemId           String?   @unique
   item             Item?     @relation(fields: [itemId], references: [id], onDelete: Cascade)
   actionText       String
@@ -98,10 +122,14 @@ model Task {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   projectNextAction Project?  @relation("NextAction")
+
+  @@index([userId])
 }
 
 model Project {
   id                String        @id @default(cuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   itemId            String?       @unique
   item              Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   outcomeStatement  String?
@@ -120,6 +148,8 @@ model Project {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   tasks             Task[]
+
+  @@index([userId])
 }
 
 model Artifact {
@@ -143,6 +173,8 @@ model Reminder {
 
 model TransitionAuditLog {
   id               String   @id @default(cuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   itemId           String
   fromState        String
   toStateAttempted String
@@ -161,12 +193,16 @@ enum ReviewSessionType {
 
 model ReviewSession {
   id                   String           @id @default(cuid())
+  userId               String
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type                 ReviewSessionType
   startedAt            DateTime         @default(now())
   completedAt          DateTime?
   stepsCompleted       Json?
   itemsProcessedCount  Int              @default(0)
   itemsSkippedCount    Int              @default(0)
+
+  @@index([userId])
 }
 
 enum CalendarSourceKind {
@@ -177,6 +213,8 @@ enum CalendarSourceKind {
 
 model CalendarSource {
   id           String             @id @default(cuid())
+  userId       String
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   kind         CalendarSourceKind
   config       Json?
@@ -184,6 +222,8 @@ model CalendarSource {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   events       CalendarEvent[]
+
+  @@index([userId])
 }
 
 model CalendarEvent {

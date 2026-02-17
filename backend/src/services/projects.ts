@@ -10,14 +10,21 @@ const projectInclude = {
   tasks: true,
 };
 
-export async function listProjects() {
+export async function listProjects(userId: string) {
   return prisma.project.findMany({
+    where: { userId },
     include: projectInclude,
     orderBy: [{ focusThisWeek: "desc" }, { priority: "desc" }, { updatedAt: "desc" }],
   });
 }
 
-export async function getProject(id: string) {
+export async function getProject(id: string, userId?: string) {
+  if (userId) {
+    return prisma.project.findFirst({
+      where: { id, userId },
+      include: projectInclude,
+    });
+  }
   return prisma.project.findUnique({
     where: { id },
     include: projectInclude,
@@ -27,15 +34,18 @@ export async function getProject(id: string) {
 const ACTIVE: ProjectStatus = "ACTIVE";
 const CLARIFYING: ProjectStatus = "CLARIFYING";
 
-export async function createProject(data: {
-  itemId?: string;
-  outcomeStatement?: string;
-  nextActionText?: string;
-  status?: ProjectStatus;
-  dueDate?: Date;
-  priority?: number;
-  themeTag?: string;
-}) {
+export async function createProject(
+  userId: string,
+  data: {
+    itemId?: string;
+    outcomeStatement?: string;
+    nextActionText?: string;
+    status?: ProjectStatus;
+    dueDate?: Date;
+    priority?: number;
+    themeTag?: string;
+  }
+) {
   const status = data.status ?? CLARIFYING;
   const hasItem = data.itemId != null && data.itemId !== "";
   const outcome = (data.outcomeStatement ?? "").trim();
@@ -56,6 +66,7 @@ export async function createProject(data: {
   if (status === ACTIVE && nextActionText) {
     const task = await prisma.task.create({
       data: {
+        userId,
         itemId: hasItem ? data.itemId! : null,
         actionText: nextActionText,
         projectId: undefined,
@@ -66,6 +77,7 @@ export async function createProject(data: {
 
   const project = await prisma.project.create({
     data: {
+      userId,
       itemId: hasItem ? data.itemId! : null,
       outcomeStatement: outcome || null,
       status,
@@ -92,7 +104,7 @@ export async function createProject(data: {
     });
   }
 
-  return { success: true, project: await getProject(project.id) };
+  return { success: true, project: await getProject(project.id, userId) };
 }
 
 export function projectStatusToItemState(status: ProjectStatus): "PROJECT" | "WAITING" | "SOMEDAY" | "DONE" | "ARCHIVED" {
@@ -114,15 +126,15 @@ export function projectStatusToItemState(status: ProjectStatus): "PROJECT" | "WA
   }
 }
 
-export async function assignItemToProject(projectId: string, itemId: string): Promise<
+export async function assignItemToProject(projectId: string, itemId: string, userId: string): Promise<
   | { success: true; project: Awaited<ReturnType<typeof getProject>> }
   | { success: false; reason: string }
 > {
-  const project = await getProject(projectId);
+  const project = await getProject(projectId, userId);
   if (!project) return { success: false, reason: "Project not found" };
   if (project.itemId != null) return { success: false, reason: "Project already has an item assigned" };
 
-  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
   if (!item) return { success: false, reason: "Item not found" };
 
   const itemState = projectStatusToItemState(project.status);
@@ -150,11 +162,12 @@ export async function assignItemToProject(projectId: string, itemId: string): Pr
     }
   }
 
-  return { success: true, project: await getProject(projectId) };
+  return { success: true, project: await getProject(projectId, userId) };
 }
 
 export async function patchProject(
   id: string,
+  userId: string,
   body: {
     outcomeStatement?: string;
     nextActionTaskId?: string | null;
@@ -169,7 +182,7 @@ export async function patchProject(
     followUpAt?: string | null;
   }
 ): Promise<Awaited<ReturnType<typeof getProject>> | { error: string } | null> {
-  const project = await getProject(id);
+  const project = await getProject(id, userId);
   if (!project) return null;
 
   const updates: Parameters<typeof prisma.project.update>[0]["data"] = {};
@@ -200,6 +213,7 @@ export async function patchProject(
         if (!rule.valid) return { error: rule.reason ?? "Invalid next action" };
         const task = await prisma.task.create({
           data: {
+            userId,
             itemId: project.itemId ?? undefined,
             actionText: body.nextActionText.trim(),
             projectId: id,
@@ -221,6 +235,7 @@ export async function patchProject(
     if (!rule.valid) return { error: rule.reason ?? "Invalid next action" };
     const task = await prisma.task.create({
       data: {
+        userId,
         itemId: project.itemId ?? undefined,
         actionText: body.nextActionText.trim(),
         projectId: id,
@@ -260,9 +275,10 @@ export async function patchProject(
   return updated;
 }
 
-export async function listProjectsWithoutNextAction() {
+export async function listProjectsWithoutNextAction(userId: string) {
   return prisma.project.findMany({
     where: {
+      userId,
       nextActionTaskId: null,
       status: { in: ["ACTIVE", "WAITING", "ON_HOLD", "CLARIFYING"] },
     },
@@ -305,19 +321,20 @@ export async function syncProjectStateForNextActionTask(
   }
 }
 
-export async function listProjectsByStatus(statuses: ProjectStatus[]) {
+export async function listProjectsByStatus(userId: string, statuses: ProjectStatus[]) {
   return prisma.project.findMany({
-    where: { status: { in: statuses } },
+    where: { userId, status: { in: statuses } },
     include: projectInclude,
     orderBy: [{ updatedAt: "desc" }],
   });
 }
 
 /** Remaining open tasks for a project (task status not "completed"). */
-export async function getProjectRemainingTaskCount(projectId: string): Promise<number> {
+export async function getProjectRemainingTaskCount(projectId: string, userId: string): Promise<number> {
   return prisma.task.count({
     where: {
       projectId,
+      userId,
       status: { not: "completed" },
     },
   });
@@ -329,9 +346,10 @@ export type CompleteProjectResult =
 
 export async function completeProject(
   id: string,
+  userId: string,
   options: { confirmOutcome: boolean; remainingTaskPolicy?: "strict" | "flexible" }
 ): Promise<CompleteProjectResult> {
-  const project = await getProject(id);
+  const project = await getProject(id, userId);
   if (!project) return { success: false, error: "Project not found" };
   if (!isProjectTransitionAllowed(project.status, "DONE")) {
     return { success: false, error: `Cannot mark project DONE from ${project.status}.` };
@@ -340,11 +358,11 @@ export async function completeProject(
     return { success: false, error: "confirmOutcome is required to mark project done." };
   }
 
-  const remainingCount = await getProjectRemainingTaskCount(id);
+  const remainingCount = await getProjectRemainingTaskCount(id, userId);
   const policy = options.remainingTaskPolicy ?? "flexible";
   if (policy === "strict" && remainingCount > 0) {
     const tasks = await prisma.task.findMany({
-      where: { projectId: id, status: { not: "completed" } },
+      where: { projectId: id, userId, status: { not: "completed" } },
       select: { id: true, actionText: true },
     });
     return {
@@ -368,11 +386,11 @@ export async function completeProject(
   return { success: true, project: updated };
 }
 
-export async function listStalledProjects(days: number = 14) {
+export async function listStalledProjects(userId: string, days: number = 14) {
   const since = new Date();
   since.setDate(since.getDate() - days);
   const projects = await prisma.project.findMany({
-    where: { status: { in: ["ACTIVE", "WAITING", "ON_HOLD"] } },
+    where: { userId, status: { in: ["ACTIVE", "WAITING", "ON_HOLD"] } },
     include: { item: true, nextActionTask: true, tasks: true },
   });
   return projects.filter((p) => {

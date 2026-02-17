@@ -8,9 +8,12 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 export const calendarsRouter = Router();
 
 /** GET /calendars/sources - list calendar sources */
-calendarsRouter.get("/sources", async (_req: Request, res: Response) => {
+calendarsRouter.get("/sources", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const sources = await prisma.calendarSource.findMany({
+      where: { userId },
       orderBy: { updatedAt: "desc" },
       select: { id: true, name: true, kind: true, lastSyncedAt: true, createdAt: true },
     });
@@ -22,8 +25,10 @@ calendarsRouter.get("/sources", async (_req: Request, res: Response) => {
 
 /** DELETE /calendars/sources/:id */
 calendarsRouter.delete("/sources/:id", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    await prisma.calendarSource.delete({ where: { id: req.params.id } });
+    await prisma.calendarSource.deleteMany({ where: { id: req.params.id, userId } });
     res.status(204).send();
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -35,6 +40,8 @@ calendarsRouter.post(
   "/import",
   upload.single("ics"),
   async (req: Request, res: Response) => {
+    const userId = (req.session as { userId?: string }).userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
     try {
       const file = (req as unknown as { file?: Express.Multer.File }).file;
       if (!file || !file.buffer) {
@@ -42,7 +49,7 @@ calendarsRouter.post(
       }
       const name = (req.body?.name as string) || file.originalname || "Imported calendar";
       const icsContent = file.buffer.toString("utf-8");
-      const result = await calendarImport.importIcsToSource(name, icsContent);
+      const result = await calendarImport.importIcsToSource(userId, name, icsContent);
       res.status(201).json(result);
     } catch (e) {
       res.status(500).json({ error: String(e) });
@@ -51,9 +58,12 @@ calendarsRouter.post(
 );
 
 /** GET /calendars/export.ics - export all calendar events as .ics */
-calendarsRouter.get("/export.ics", async (_req: Request, res: Response) => {
+calendarsRouter.get("/export.ics", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const events = await prisma.calendarEvent.findMany({
+      where: { calendarSource: { userId } },
       include: { calendarSource: true },
       orderBy: [{ start: "asc" }],
     });

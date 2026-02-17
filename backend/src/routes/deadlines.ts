@@ -3,9 +3,11 @@ import * as deadlinesService from "../services/deadlines.js";
 
 export const deadlinesRouter = Router();
 
-deadlinesRouter.get("/", async (_req: Request, res: Response) => {
+deadlinesRouter.get("/", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await deadlinesService.getDeadlines();
+    const data = await deadlinesService.getDeadlines(userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });

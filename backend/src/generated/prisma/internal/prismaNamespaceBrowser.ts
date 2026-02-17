@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  User: 'User',
   Item: 'Item',
   Task: 'Task',
   Project: 'Project',
@@ -78,8 +79,22 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  name: 'name',
+  theme: 'theme',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
 export const ItemScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   title: 'title',
   body: 'body',
   type: 'type',
@@ -97,6 +112,7 @@ export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof Item
 
 export const TaskScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   itemId: 'itemId',
   actionText: 'actionText',
   context: 'context',
@@ -119,6 +135,7 @@ export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof Task
 
 export const ProjectScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   itemId: 'itemId',
   outcomeStatement: 'outcomeStatement',
   status: 'status',
@@ -164,6 +181,7 @@ export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typ
 
 export const TransitionAuditLogScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   itemId: 'itemId',
   fromState: 'fromState',
   toStateAttempted: 'toStateAttempted',
@@ -180,6 +198,7 @@ export type TransitionAuditLogScalarFieldEnum = (typeof TransitionAuditLogScalar
 
 export const ReviewSessionScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   type: 'type',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
@@ -193,6 +212,7 @@ export type ReviewSessionScalarFieldEnum = (typeof ReviewSessionScalarFieldEnum)
 
 export const CalendarSourceScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   name: 'name',
   kind: 'kind',
   config: 'config',
@@ -245,6 +265,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -252,12 +280,4 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

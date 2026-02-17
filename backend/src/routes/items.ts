@@ -76,9 +76,11 @@ const transitionSchema = z.object({
 
 itemsRouter.get("/items", async (req: Request, res: Response) => {
   const state = req.query.state as ItemState | undefined;
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   console.log(`[ITEMS] GET /items state=${state ?? "undefined"}`);
   try {
-    const list = await itemsService.listItems(state);
+    const list = await itemsService.listItems(userId, state);
     const payload: Record<string, unknown> = { count: list.length };
     if (state === "INBOX") payload.ids = list.map((i) => i.id);
     console.log(`[ITEMS] listItems returned ${JSON.stringify(payload)}`);
@@ -105,7 +107,9 @@ itemsRouter.post("/items", async (req: Request, res: Response) => {
     const d = parsed.data;
     console.log(`[ITEMS] POST /items validation passed title="${(d.title || "").slice(0, 50)}" source=${d.source ?? ""} attachments=${d.attachments?.length ?? 0}`);
     console.log(`[ITEMS] createItem called title="${(d.title || "").slice(0, 50)}" source=${d.source ?? ""}`);
-    const item = await itemsService.createItem(parsed.data);
+    const userId = (req.session as { userId?: string }).userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+    const item = await itemsService.createItem(userId, parsed.data);
     console.log(`[ITEMS] createItem succeeded id=${item.id} title="${(item.title || "").slice(0, 50)}" state=${item.state}`);
     console.log(`[ITEMS] POST /items responding 201 id=${item.id}`);
     res.status(201).json(item);
@@ -116,8 +120,10 @@ itemsRouter.post("/items", async (req: Request, res: Response) => {
 });
 
 itemsRouter.get("/items/:id", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const item = await itemsService.getItem(req.params.id);
+    const item = await itemsService.getItem(req.params.id, userId);
     if (!item) return res.status(404).json({ error: "Not found" });
     res.json(item);
   } catch (e) {
@@ -126,12 +132,14 @@ itemsRouter.get("/items/:id", async (req: Request, res: Response) => {
 });
 
 itemsRouter.patch("/items/:id", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = patchItemSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const item = await itemsService.patchItem(req.params.id, parsed.data);
+    const item = await itemsService.patchItem(req.params.id, userId, parsed.data);
     if (!item) return res.status(404).json({ error: "Not found" });
     res.json(item);
   } catch (e) {
@@ -140,8 +148,10 @@ itemsRouter.patch("/items/:id", async (req: Request, res: Response) => {
 });
 
 itemsRouter.post("/items/:id/classify", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const item = await itemsService.getItem(req.params.id);
+    const item = await itemsService.getItem(req.params.id, userId);
     if (!item) return res.status(404).json({ error: "Not found" });
     const { classifyItem } = await import("../ai/worker.js");
     const result = await classifyItem(item.title, item.body);
@@ -170,8 +180,10 @@ itemsRouter.post("/items/:id/reminders", async (req: Request, res: Response) => 
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
+    const userId = (req.session as { userId?: string }).userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
     const dueAt = new Date(parsed.data.dueAt);
-    const reminder = await itemsService.addReminder(req.params.id, dueAt, parsed.data.kind ?? "follow_up");
+    const reminder = await itemsService.addReminder(req.params.id, userId, dueAt, parsed.data.kind ?? "follow_up");
     if (!reminder) return res.status(404).json({ error: "Not found" });
     res.status(201).json(reminder);
   } catch (e) {
@@ -181,6 +193,8 @@ itemsRouter.post("/items/:id/reminders", async (req: Request, res: Response) => 
 
 // Canonical transition (Boss layer): all state changes go through here
 itemsRouter.post("/items/:id/transition", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = transitionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -189,6 +203,7 @@ itemsRouter.post("/items/:id/transition", async (req: Request, res: Response) =>
     const payload = parsed.data.proposed_changes ?? {};
     const result = await transitionService.executeTransition(
       req.params.id,
+      userId,
       parsed.data.target_state,
       payload,
       "user",
@@ -206,6 +221,8 @@ itemsRouter.post("/items/:id/transition", async (req: Request, res: Response) =>
 
 // Disposition: next action (creates task, sets state) — delegates to transition service (Gate 1 + audit)
 itemsRouter.post("/items/:id/disposition/next_action", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = nextActionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -213,6 +230,7 @@ itemsRouter.post("/items/:id/disposition/next_action", async (req: Request, res:
     }
     const result = await transitionService.executeTransition(
       req.params.id,
+      userId,
       "ACTIONABLE",
       {
         actionText: parsed.data.actionText,
@@ -234,6 +252,8 @@ itemsRouter.post("/items/:id/disposition/next_action", async (req: Request, res:
 
 // Disposition: project (creates project + next action task)
 itemsRouter.post("/items/:id/disposition/project", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = projectDispositionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -241,6 +261,7 @@ itemsRouter.post("/items/:id/disposition/project", async (req: Request, res: Res
     }
     const result = await itemsService.setDispositionProject(
       req.params.id,
+      userId,
       parsed.data.outcomeStatement,
       parsed.data.nextActionText,
       { dueDate: parsed.data.dueDate }
@@ -254,8 +275,10 @@ itemsRouter.post("/items/:id/disposition/project", async (req: Request, res: Res
 
 // Create follow-up task from WAITING item (review flow)
 itemsRouter.post("/items/:id/create-follow-up-task", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const result = await itemsService.createFollowUpTaskFromWaiting(req.params.id);
+    const result = await itemsService.createFollowUpTaskFromWaiting(req.params.id, userId);
     if (!result.success) {
       const status = result.reason === "Item not found" ? 404 : 400;
       return res.status(status).json({ error: result.reason });

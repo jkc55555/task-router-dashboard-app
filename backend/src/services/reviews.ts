@@ -18,41 +18,44 @@ function endOfTomorrow(): Date {
   return new Date(startOfTomorrow().getTime() + 24 * 60 * 60 * 1000 - 1);
 }
 
-export async function getDailySnapshot() {
+export async function getDailySnapshot(userId: string) {
   const now = new Date();
   const eot = endOfToday();
   const sotTomorrow = startOfTomorrow();
   const eotTomorrow = endOfTomorrow();
 
-  const inboxCount = await prisma.item.count({ where: { state: "INBOX" } });
+  const inboxCount = await prisma.item.count({ where: { userId, state: "INBOX" } });
   const overdueCount = await prisma.task.count({
     where: {
+      userId,
       dueDate: { lt: now },
       item: { state: "ACTIONABLE" },
     },
   });
   const dueTodayCount = await prisma.task.count({
     where: {
+      userId,
       dueDate: { gte: startOfToday(), lte: eot },
       item: { state: "ACTIONABLE" },
     },
   });
   const dueTomorrowCount = await prisma.task.count({
     where: {
+      userId,
       dueDate: { gte: sotTomorrow, lte: eotTomorrow },
       item: { state: "ACTIONABLE" },
     },
   });
   const waitingItems = await prisma.item.findMany({
-    where: { state: "WAITING" },
+    where: { userId, state: "WAITING" },
     include: { reminders: true },
   });
   const waitingFollowUpsDueCount = waitingItems.filter((i) =>
     i.reminders.some((r) => r.dueAt <= now)
   ).length;
-  const projectsNoNext = await listProjectsWithoutNextAction();
+  const projectsNoNext = await listProjectsWithoutNextAction(userId);
   const unverifiedCount = await prisma.task.count({
-    where: { unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
+    where: { userId, unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
   });
 
   return {
@@ -66,13 +69,14 @@ export async function getDailySnapshot() {
   };
 }
 
-export async function getDailyStep(stepId: string): Promise<{ items: unknown[]; stepId: string }> {
+export async function getDailyStep(stepId: string, userId: string): Promise<{ items: unknown[]; stepId: string }> {
   const now = new Date();
   const eot = endOfToday();
 
   if (stepId === "D2") {
     const tasks = await prisma.task.findMany({
       where: {
+        userId,
         item: { state: "ACTIONABLE" },
         dueDate: { lte: eot },
       },
@@ -95,6 +99,7 @@ export async function getDailyStep(stepId: string): Promise<{ items: unknown[]; 
   if (stepId === "D3") {
     const items = await prisma.item.findMany({
       where: {
+        userId,
         state: "WAITING",
         reminders: { some: { dueAt: { lte: now } } },
       },
@@ -115,6 +120,7 @@ export async function getDailyStep(stepId: string): Promise<{ items: unknown[]; 
   if (stepId === "D4") {
     const projects = await prisma.project.findMany({
       where: {
+        userId,
         status: { in: ["ACTIVE", "WAITING", "ON_HOLD"] },
       },
       include: { item: true },
@@ -134,10 +140,10 @@ export async function getDailyStep(stepId: string): Promise<{ items: unknown[]; 
 
   if (stepId === "D5") {
     const unverifiedTasks = await prisma.task.findMany({
-      where: { unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
+      where: { userId, unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
       include: { item: true, project: { include: { item: true } } },
     });
-    const projectsNoNext = await listProjectsWithoutNextAction();
+    const projectsNoNext = await listProjectsWithoutNextAction(userId);
     const items = [
       ...unverifiedTasks.map((t) => ({
         type: "task" as const,
@@ -160,28 +166,29 @@ export async function getDailyStep(stepId: string): Promise<{ items: unknown[]; 
   return { stepId, items: [] };
 }
 
-export async function getWeeklySnapshot() {
+export async function getWeeklySnapshot(userId: string) {
   const now = new Date();
   const staleThreshold = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
-  const inboxCount = await prisma.item.count({ where: { state: "INBOX" } });
-  const projectsActiveCount = await prisma.project.count({ where: { status: "ACTIVE" } });
-  const projectsWaitingCount = await prisma.project.count({ where: { status: "WAITING" } });
-  const projectsOnHoldCount = await prisma.project.count({ where: { status: "ON_HOLD" } });
-  const projectsMissingNextAction = await listProjectsWithoutNextAction();
+  const inboxCount = await prisma.item.count({ where: { userId, state: "INBOX" } });
+  const projectsActiveCount = await prisma.project.count({ where: { userId, status: "ACTIVE" } });
+  const projectsWaitingCount = await prisma.project.count({ where: { userId, status: "WAITING" } });
+  const projectsOnHoldCount = await prisma.project.count({ where: { userId, status: "ON_HOLD" } });
+  const projectsMissingNextAction = await listProjectsWithoutNextAction(userId);
   const waitingItems = await prisma.item.findMany({
-    where: { state: "WAITING" },
+    where: { userId, state: "WAITING" },
     include: { reminders: true },
   });
   const waitingMissingFollowUpCount = waitingItems.filter(
     (i) => i.reminders.length === 0 || i.reminders.every((r) => r.dueAt > now)
   ).length;
-  const somedayCount = await prisma.item.count({ where: { state: "SOMEDAY" } });
+  const somedayCount = await prisma.item.count({ where: { userId, state: "SOMEDAY" } });
   const unverifiedCount = await prisma.task.count({
-    where: { unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
+    where: { userId, unverified: true, item: { state: { notIn: ["DONE", "ARCHIVED"] } } },
   });
   const staleTasksCount = await prisma.task.count({
     where: {
+      userId,
       updatedAt: { lt: staleThreshold },
       item: { state: "ACTIONABLE" },
     },
@@ -200,12 +207,12 @@ export async function getWeeklySnapshot() {
   };
 }
 
-export async function getWeeklyStep(stepId: string): Promise<{ items: unknown[]; stepId: string }> {
+export async function getWeeklyStep(stepId: string, userId: string): Promise<{ items: unknown[]; stepId: string }> {
   const now = new Date();
 
   if (stepId === "W2") {
     const items = await prisma.item.findMany({
-      where: { state: "INBOX" },
+      where: { userId, state: "INBOX" },
       include: { task: true, project: true },
       orderBy: { updatedAt: "desc" },
     });
@@ -217,7 +224,7 @@ export async function getWeeklyStep(stepId: string): Promise<{ items: unknown[];
 
   if (stepId === "W3") {
     const projects = await prisma.project.findMany({
-      where: { status: { in: ["ACTIVE", "WAITING", "ON_HOLD", "CLARIFYING"] } },
+      where: { userId, status: { in: ["ACTIVE", "WAITING", "ON_HOLD", "CLARIFYING"] } },
       include: { item: true, nextActionTask: true },
     });
     const items = projects.map((p) => ({
@@ -235,7 +242,7 @@ export async function getWeeklyStep(stepId: string): Promise<{ items: unknown[];
 
   if (stepId === "W4") {
     const items = await prisma.item.findMany({
-      where: { state: "WAITING" },
+      where: { userId, state: "WAITING" },
       include: { reminders: true },
     });
     return {
@@ -253,7 +260,7 @@ export async function getWeeklyStep(stepId: string): Promise<{ items: unknown[];
 
   if (stepId === "W5") {
     const items = await prisma.item.findMany({
-      where: { state: "SOMEDAY" },
+      where: { userId, state: "SOMEDAY" },
       orderBy: { updatedAt: "desc" },
     });
     return {
@@ -265,9 +272,10 @@ export async function getWeeklyStep(stepId: string): Promise<{ items: unknown[];
   return { stepId, items: [] };
 }
 
-export async function createSession(type: "daily" | "weekly") {
+export async function createSession(userId: string, type: "daily" | "weekly") {
   const session = await prisma.reviewSession.create({
     data: {
+      userId,
       type: type.toUpperCase() as ReviewSessionType,
     },
   });
@@ -280,6 +288,7 @@ export async function createSession(type: "daily" | "weekly") {
 
 export async function updateSession(
   id: string,
+  userId: string,
   body: {
     stepCompleted?: string;
     itemsProcessed?: number;
@@ -287,7 +296,7 @@ export async function updateSession(
     completedAt?: string | null;
   }
 ) {
-  const session = await prisma.reviewSession.findUnique({ where: { id } });
+  const session = await prisma.reviewSession.findFirst({ where: { id, userId } });
   if (!session) return null;
 
   const stepsCompleted = session.stepsCompleted as string[] | null;
@@ -313,24 +322,25 @@ export async function updateSession(
   return { ok: true };
 }
 
-export async function getDailyReview() {
-  const inboxCount = await prisma.item.count({ where: { state: "INBOX" } });
+export async function getDailyReview(userId: string) {
+  const inboxCount = await prisma.item.count({ where: { userId, state: "INBOX" } });
   const overdueTasks = await prisma.task.findMany({
     where: {
+      userId,
       dueDate: { lt: new Date() },
       item: { state: { notIn: ["DONE", "ARCHIVED"] } },
     },
     include: { item: true },
   });
   const waitingItems = await prisma.item.findMany({
-    where: { state: "WAITING" },
+    where: { userId, state: "WAITING" },
     include: { reminders: true },
   });
   const waitingFollowUps = waitingItems.filter((i) =>
     i.reminders.some((r) => r.dueAt <= new Date())
   );
-  const projectsNoNext = await listProjectsWithoutNextAction();
-  const projectsNeedingClarification = await listProjectsByStatus(["CLARIFYING"]);
+  const projectsNoNext = await listProjectsWithoutNextAction(userId);
+  const projectsNeedingClarification = await listProjectsByStatus(userId, ["CLARIFYING"]);
   return {
     inboxCount,
     overdue: overdueTasks.map((t) => ({ id: t.id, title: t.item?.title ?? t.actionText, dueDate: t.dueDate })),
@@ -343,19 +353,19 @@ export async function getDailyReview() {
   };
 }
 
-export async function getWeeklyReview() {
-  const inboxCount = await prisma.item.count({ where: { state: "INBOX" } });
-  const projectsWithoutNextAction = await listProjectsWithoutNextAction();
-  const projectsNeedingClarification = await listProjectsByStatus(["CLARIFYING"]);
+export async function getWeeklyReview(userId: string) {
+  const inboxCount = await prisma.item.count({ where: { userId, state: "INBOX" } });
+  const projectsWithoutNextAction = await listProjectsWithoutNextAction(userId);
+  const projectsNeedingClarification = await listProjectsByStatus(userId, ["CLARIFYING"]);
   const waiting = await prisma.item.findMany({
-    where: { state: "WAITING" },
+    where: { userId, state: "WAITING" },
     include: { reminders: true },
   });
   const someday = await prisma.item.findMany({
-    where: { state: "SOMEDAY" },
+    where: { userId, state: "SOMEDAY" },
   });
   const focusProjects = await prisma.project.findMany({
-    where: { focusThisWeek: true },
+    where: { userId, focusThisWeek: true },
     include: { item: true },
   });
   return {
@@ -375,17 +385,18 @@ export async function getWeeklyReview() {
   };
 }
 
-export async function postWeeklyReview(body: {
+export async function postWeeklyReview(userId: string, body: {
   focusProjectIds?: string[];
   stepsCompleted?: string[];
 }) {
   if (body.focusProjectIds !== undefined) {
     await prisma.project.updateMany({
+      where: { userId },
       data: { focusThisWeek: false },
     });
     if (body.focusProjectIds.length > 0) {
       await prisma.project.updateMany({
-        where: { id: { in: body.focusProjectIds } },
+        where: { userId, id: { in: body.focusProjectIds } },
         data: { focusThisWeek: true },
       });
     }

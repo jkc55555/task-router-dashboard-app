@@ -38,6 +38,7 @@ export type ReviewSessionSumAggregateOutputType = {
 
 export type ReviewSessionMinAggregateOutputType = {
   id: string | null
+  userId: string | null
   type: $Enums.ReviewSessionType | null
   startedAt: Date | null
   completedAt: Date | null
@@ -47,6 +48,7 @@ export type ReviewSessionMinAggregateOutputType = {
 
 export type ReviewSessionMaxAggregateOutputType = {
   id: string | null
+  userId: string | null
   type: $Enums.ReviewSessionType | null
   startedAt: Date | null
   completedAt: Date | null
@@ -56,6 +58,7 @@ export type ReviewSessionMaxAggregateOutputType = {
 
 export type ReviewSessionCountAggregateOutputType = {
   id: number
+  userId: number
   type: number
   startedAt: number
   completedAt: number
@@ -78,6 +81,7 @@ export type ReviewSessionSumAggregateInputType = {
 
 export type ReviewSessionMinAggregateInputType = {
   id?: true
+  userId?: true
   type?: true
   startedAt?: true
   completedAt?: true
@@ -87,6 +91,7 @@ export type ReviewSessionMinAggregateInputType = {
 
 export type ReviewSessionMaxAggregateInputType = {
   id?: true
+  userId?: true
   type?: true
   startedAt?: true
   completedAt?: true
@@ -96,6 +101,7 @@ export type ReviewSessionMaxAggregateInputType = {
 
 export type ReviewSessionCountAggregateInputType = {
   id?: true
+  userId?: true
   type?: true
   startedAt?: true
   completedAt?: true
@@ -193,6 +199,7 @@ export type ReviewSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type ReviewSessionGroupByOutputType = {
   id: string
+  userId: string
   type: $Enums.ReviewSessionType
   startedAt: Date
   completedAt: Date | null
@@ -226,22 +233,26 @@ export type ReviewSessionWhereInput = {
   OR?: Prisma.ReviewSessionWhereInput[]
   NOT?: Prisma.ReviewSessionWhereInput | Prisma.ReviewSessionWhereInput[]
   id?: Prisma.StringFilter<"ReviewSession"> | string
+  userId?: Prisma.StringFilter<"ReviewSession"> | string
   type?: Prisma.EnumReviewSessionTypeFilter<"ReviewSession"> | $Enums.ReviewSessionType
   startedAt?: Prisma.DateTimeFilter<"ReviewSession"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"ReviewSession"> | Date | string | null
   stepsCompleted?: Prisma.JsonNullableFilter<"ReviewSession">
   itemsProcessedCount?: Prisma.IntFilter<"ReviewSession"> | number
   itemsSkippedCount?: Prisma.IntFilter<"ReviewSession"> | number
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ReviewSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   stepsCompleted?: Prisma.SortOrderInput | Prisma.SortOrder
   itemsProcessedCount?: Prisma.SortOrder
   itemsSkippedCount?: Prisma.SortOrder
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ReviewSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -249,16 +260,19 @@ export type ReviewSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ReviewSessionWhereInput | Prisma.ReviewSessionWhereInput[]
   OR?: Prisma.ReviewSessionWhereInput[]
   NOT?: Prisma.ReviewSessionWhereInput | Prisma.ReviewSessionWhereInput[]
+  userId?: Prisma.StringFilter<"ReviewSession"> | string
   type?: Prisma.EnumReviewSessionTypeFilter<"ReviewSession"> | $Enums.ReviewSessionType
   startedAt?: Prisma.DateTimeFilter<"ReviewSession"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"ReviewSession"> | Date | string | null
   stepsCompleted?: Prisma.JsonNullableFilter<"ReviewSession">
   itemsProcessedCount?: Prisma.IntFilter<"ReviewSession"> | number
   itemsSkippedCount?: Prisma.IntFilter<"ReviewSession"> | number
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ReviewSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -277,6 +291,7 @@ export type ReviewSessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.ReviewSessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ReviewSessionScalarWhereWithAggregatesInput | Prisma.ReviewSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ReviewSession"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"ReviewSession"> | string
   type?: Prisma.EnumReviewSessionTypeWithAggregatesFilter<"ReviewSession"> | $Enums.ReviewSessionType
   startedAt?: Prisma.DateTimeWithAggregatesFilter<"ReviewSession"> | Date | string
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReviewSession"> | Date | string | null
@@ -293,10 +308,12 @@ export type ReviewSessionCreateInput = {
   stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   itemsProcessedCount?: number
   itemsSkippedCount?: number
+  user: Prisma.UserCreateNestedOneWithoutReviewSessionsInput
 }
 
 export type ReviewSessionUncheckedCreateInput = {
   id?: string
+  userId: string
   type: $Enums.ReviewSessionType
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -313,10 +330,12 @@ export type ReviewSessionUpdateInput = {
   stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   itemsProcessedCount?: Prisma.IntFieldUpdateOperationsInput | number
   itemsSkippedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UserUpdateOneRequiredWithoutReviewSessionsNestedInput
 }
 
 export type ReviewSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReviewSessionTypeFieldUpdateOperationsInput | $Enums.ReviewSessionType
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -327,6 +346,7 @@ export type ReviewSessionUncheckedUpdateInput = {
 
 export type ReviewSessionCreateManyInput = {
   id?: string
+  userId: string
   type: $Enums.ReviewSessionType
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -347,6 +367,7 @@ export type ReviewSessionUpdateManyMutationInput = {
 
 export type ReviewSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumReviewSessionTypeFieldUpdateOperationsInput | $Enums.ReviewSessionType
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -355,8 +376,19 @@ export type ReviewSessionUncheckedUpdateManyInput = {
   itemsSkippedCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
+export type ReviewSessionListRelationFilter = {
+  every?: Prisma.ReviewSessionWhereInput
+  some?: Prisma.ReviewSessionWhereInput
+  none?: Prisma.ReviewSessionWhereInput
+}
+
+export type ReviewSessionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type ReviewSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -372,6 +404,7 @@ export type ReviewSessionAvgOrderByAggregateInput = {
 
 export type ReviewSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -381,6 +414,7 @@ export type ReviewSessionMaxOrderByAggregateInput = {
 
 export type ReviewSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -391,6 +425,48 @@ export type ReviewSessionMinOrderByAggregateInput = {
 export type ReviewSessionSumOrderByAggregateInput = {
   itemsProcessedCount?: Prisma.SortOrder
   itemsSkippedCount?: Prisma.SortOrder
+}
+
+export type ReviewSessionCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput> | Prisma.ReviewSessionCreateWithoutUserInput[] | Prisma.ReviewSessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ReviewSessionCreateOrConnectWithoutUserInput | Prisma.ReviewSessionCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ReviewSessionCreateManyUserInputEnvelope
+  connect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+}
+
+export type ReviewSessionUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput> | Prisma.ReviewSessionCreateWithoutUserInput[] | Prisma.ReviewSessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ReviewSessionCreateOrConnectWithoutUserInput | Prisma.ReviewSessionCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ReviewSessionCreateManyUserInputEnvelope
+  connect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+}
+
+export type ReviewSessionUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput> | Prisma.ReviewSessionCreateWithoutUserInput[] | Prisma.ReviewSessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ReviewSessionCreateOrConnectWithoutUserInput | Prisma.ReviewSessionCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ReviewSessionUpsertWithWhereUniqueWithoutUserInput | Prisma.ReviewSessionUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ReviewSessionCreateManyUserInputEnvelope
+  set?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  disconnect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  delete?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  connect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  update?: Prisma.ReviewSessionUpdateWithWhereUniqueWithoutUserInput | Prisma.ReviewSessionUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ReviewSessionUpdateManyWithWhereWithoutUserInput | Prisma.ReviewSessionUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ReviewSessionScalarWhereInput | Prisma.ReviewSessionScalarWhereInput[]
+}
+
+export type ReviewSessionUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput> | Prisma.ReviewSessionCreateWithoutUserInput[] | Prisma.ReviewSessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ReviewSessionCreateOrConnectWithoutUserInput | Prisma.ReviewSessionCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ReviewSessionUpsertWithWhereUniqueWithoutUserInput | Prisma.ReviewSessionUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ReviewSessionCreateManyUserInputEnvelope
+  set?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  disconnect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  delete?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  connect?: Prisma.ReviewSessionWhereUniqueInput | Prisma.ReviewSessionWhereUniqueInput[]
+  update?: Prisma.ReviewSessionUpdateWithWhereUniqueWithoutUserInput | Prisma.ReviewSessionUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ReviewSessionUpdateManyWithWhereWithoutUserInput | Prisma.ReviewSessionUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ReviewSessionScalarWhereInput | Prisma.ReviewSessionScalarWhereInput[]
 }
 
 export type EnumReviewSessionTypeFieldUpdateOperationsInput = {
@@ -405,40 +481,147 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type ReviewSessionCreateWithoutUserInput = {
+  id?: string
+  type: $Enums.ReviewSessionType
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: number
+  itemsSkippedCount?: number
+}
+
+export type ReviewSessionUncheckedCreateWithoutUserInput = {
+  id?: string
+  type: $Enums.ReviewSessionType
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: number
+  itemsSkippedCount?: number
+}
+
+export type ReviewSessionCreateOrConnectWithoutUserInput = {
+  where: Prisma.ReviewSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput>
+}
+
+export type ReviewSessionCreateManyUserInputEnvelope = {
+  data: Prisma.ReviewSessionCreateManyUserInput | Prisma.ReviewSessionCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReviewSessionUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ReviewSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReviewSessionUpdateWithoutUserInput, Prisma.ReviewSessionUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.ReviewSessionCreateWithoutUserInput, Prisma.ReviewSessionUncheckedCreateWithoutUserInput>
+}
+
+export type ReviewSessionUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ReviewSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReviewSessionUpdateWithoutUserInput, Prisma.ReviewSessionUncheckedUpdateWithoutUserInput>
+}
+
+export type ReviewSessionUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.ReviewSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.ReviewSessionUpdateManyMutationInput, Prisma.ReviewSessionUncheckedUpdateManyWithoutUserInput>
+}
+
+export type ReviewSessionScalarWhereInput = {
+  AND?: Prisma.ReviewSessionScalarWhereInput | Prisma.ReviewSessionScalarWhereInput[]
+  OR?: Prisma.ReviewSessionScalarWhereInput[]
+  NOT?: Prisma.ReviewSessionScalarWhereInput | Prisma.ReviewSessionScalarWhereInput[]
+  id?: Prisma.StringFilter<"ReviewSession"> | string
+  userId?: Prisma.StringFilter<"ReviewSession"> | string
+  type?: Prisma.EnumReviewSessionTypeFilter<"ReviewSession"> | $Enums.ReviewSessionType
+  startedAt?: Prisma.DateTimeFilter<"ReviewSession"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"ReviewSession"> | Date | string | null
+  stepsCompleted?: Prisma.JsonNullableFilter<"ReviewSession">
+  itemsProcessedCount?: Prisma.IntFilter<"ReviewSession"> | number
+  itemsSkippedCount?: Prisma.IntFilter<"ReviewSession"> | number
+}
+
+export type ReviewSessionCreateManyUserInput = {
+  id?: string
+  type: $Enums.ReviewSessionType
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: number
+  itemsSkippedCount?: number
+}
+
+export type ReviewSessionUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReviewSessionTypeFieldUpdateOperationsInput | $Enums.ReviewSessionType
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  itemsSkippedCount?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type ReviewSessionUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReviewSessionTypeFieldUpdateOperationsInput | $Enums.ReviewSessionType
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  itemsSkippedCount?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type ReviewSessionUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumReviewSessionTypeFieldUpdateOperationsInput | $Enums.ReviewSessionType
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stepsCompleted?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  itemsProcessedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  itemsSkippedCount?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
 
 
 export type ReviewSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   type?: boolean
   startedAt?: boolean
   completedAt?: boolean
   stepsCompleted?: boolean
   itemsProcessedCount?: boolean
   itemsSkippedCount?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reviewSession"]>
 
 export type ReviewSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   type?: boolean
   startedAt?: boolean
   completedAt?: boolean
   stepsCompleted?: boolean
   itemsProcessedCount?: boolean
   itemsSkippedCount?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reviewSession"]>
 
 export type ReviewSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   type?: boolean
   startedAt?: boolean
   completedAt?: boolean
   stepsCompleted?: boolean
   itemsProcessedCount?: boolean
   itemsSkippedCount?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reviewSession"]>
 
 export type ReviewSessionSelectScalar = {
   id?: boolean
+  userId?: boolean
   type?: boolean
   startedAt?: boolean
   completedAt?: boolean
@@ -447,13 +630,25 @@ export type ReviewSessionSelectScalar = {
   itemsSkippedCount?: boolean
 }
 
-export type ReviewSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "startedAt" | "completedAt" | "stepsCompleted" | "itemsProcessedCount" | "itemsSkippedCount", ExtArgs["result"]["reviewSession"]>
+export type ReviewSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "startedAt" | "completedAt" | "stepsCompleted" | "itemsProcessedCount" | "itemsSkippedCount", ExtArgs["result"]["reviewSession"]>
+export type ReviewSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type ReviewSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type ReviewSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
 
 export type $ReviewSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReviewSession"
-  objects: {}
+  objects: {
+    user: Prisma.$UserPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    userId: string
     type: $Enums.ReviewSessionType
     startedAt: Date
     completedAt: Date | null
@@ -854,6 +1049,7 @@ readonly fields: ReviewSessionFieldRefs;
  */
 export interface Prisma__ReviewSessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -884,6 +1080,7 @@ export interface Prisma__ReviewSessionClient<T, Null = never, ExtArgs extends ru
  */
 export interface ReviewSessionFieldRefs {
   readonly id: Prisma.FieldRef<"ReviewSession", 'String'>
+  readonly userId: Prisma.FieldRef<"ReviewSession", 'String'>
   readonly type: Prisma.FieldRef<"ReviewSession", 'ReviewSessionType'>
   readonly startedAt: Prisma.FieldRef<"ReviewSession", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"ReviewSession", 'DateTime'>
@@ -907,6 +1104,10 @@ export type ReviewSessionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
+  /**
    * Filter, which ReviewSession to fetch.
    */
   where: Prisma.ReviewSessionWhereUniqueInput
@@ -925,6 +1126,10 @@ export type ReviewSessionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
+  /**
    * Filter, which ReviewSession to fetch.
    */
   where: Prisma.ReviewSessionWhereUniqueInput
@@ -942,6 +1147,10 @@ export type ReviewSessionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the ReviewSession
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
   /**
    * Filter, which ReviewSession to fetch.
    */
@@ -991,6 +1200,10 @@ export type ReviewSessionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
+  /**
    * Filter, which ReviewSession to fetch.
    */
   where?: Prisma.ReviewSessionWhereInput
@@ -1039,6 +1252,10 @@ export type ReviewSessionFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
+  /**
    * Filter, which ReviewSessions to fetch.
    */
   where?: Prisma.ReviewSessionWhereInput
@@ -1082,6 +1299,10 @@ export type ReviewSessionCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
+  /**
    * The data needed to create a ReviewSession.
    */
   data: Prisma.XOR<Prisma.ReviewSessionCreateInput, Prisma.ReviewSessionUncheckedCreateInput>
@@ -1115,6 +1336,10 @@ export type ReviewSessionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.ReviewSessionCreateManyInput | Prisma.ReviewSessionCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1129,6 +1354,10 @@ export type ReviewSessionUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the ReviewSession
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
   /**
    * The data needed to update a ReviewSession.
    */
@@ -1181,6 +1410,10 @@ export type ReviewSessionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many ReviewSessions to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1195,6 +1428,10 @@ export type ReviewSessionUpsertArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the ReviewSession
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
   /**
    * The filter to search for the ReviewSession to update in case it exists.
    */
@@ -1221,6 +1458,10 @@ export type ReviewSessionDeleteArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the ReviewSession
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
   /**
    * Filter which ReviewSession to delete.
    */
@@ -1253,4 +1494,8 @@ export type ReviewSessionDefaultArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the ReviewSession
    */
   omit?: Prisma.ReviewSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewSessionInclude<ExtArgs> | null
 }

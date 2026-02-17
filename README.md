@@ -31,7 +31,7 @@ Runs at `http://localhost:3000` by default.
 
 ## Deploy
 
-- **Railway**: Connect repo, set root to `backend` (or deploy from `backend/`). Add PostgreSQL; set `WORKER_AI_API_KEY` and `VERIFIER_AI_API_KEY` (separate agents; optional `WORKER_AI_MODEL` / `VERIFIER_AI_MODEL`). Build: `npm run build`, Start: `npm run start`. Run `npx prisma migrate deploy` in release phase if needed.
+- **Railway**: Connect repo, set root to `backend` (or deploy from `backend/`). Add PostgreSQL; ensure the **backend** service has `DATABASE_URL` in its environment (linked from the Postgres service) so `prisma migrate deploy` and the app can connect. Also set `WORKER_AI_API_KEY`, `VERIFIER_AI_API_KEY` (optional `WORKER_AI_MODEL` / `VERIFIER_AI_MODEL`), and any auth/session env (e.g. `SESSION_SECRET`, `CORS_ORIGIN`). Build: `npm run build`, Start: `npm run start`. The start command runs `prisma migrate deploy` then starts the API, so pending migrations are applied on each deploy.
 - **Vercel**: Connect repo, set root to `frontend`. Set `NEXT_PUBLIC_API_URL` to the Railway API URL.
 
 ## Acceptance (spec §B)

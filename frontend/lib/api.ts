@@ -1,5 +1,70 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+export type AuthUser = { id: string; email: string; name: string | null; theme?: string | null };
+
+export const authApi = {
+  me: (): Promise<{ user: AuthUser }> =>
+    fetch(`${API_URL}/auth/me`, { credentials: "include" }).then((r) => {
+      if (!r.ok) throw new Error("Not authenticated");
+      return r.json();
+    }),
+  login: (email: string, password: string): Promise<{ user: AuthUser }> =>
+    fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    }).then((r) => {
+      if (!r.ok) {
+        return r.json().then((b) => {
+          throw new Error((b as { error?: string }).error || "Login failed");
+        });
+      }
+      return r.json();
+    }),
+  register: (email: string, password: string, name?: string): Promise<{ user: AuthUser }> =>
+    fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    }).then((r) => {
+      if (!r.ok) {
+        return r.json().then((b) => {
+          throw new Error((b as { error?: string }).error || "Registration failed");
+        });
+      }
+      return r.json();
+    }),
+  logout: (): Promise<void> =>
+    fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }).then((r) => {
+      if (!r.ok) throw new Error("Logout failed");
+    }),
+  changePassword: (currentPassword: string, newPassword: string): Promise<void> =>
+    fetch(`${API_URL}/auth/change-password`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }).then((r) => {
+      if (!r.ok) {
+        return r.json().then((b) => {
+          throw new Error((b as { error?: string }).error || "Change password failed");
+        });
+      }
+    }),
+  patchMe: (data: { theme?: string; name?: string }): Promise<{ user: AuthUser }> =>
+    fetch(`${API_URL}/auth/me`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).then((r) => {
+      if (!r.ok) throw new Error("Update failed");
+      return r.json();
+    }),
+};
+
 /** Resolve attachment URL (backend may return path like /uploads/xxx). */
 export function getAttachmentUrl(url: string): string {
   if (url.startsWith("http")) return url;
@@ -22,6 +87,7 @@ async function fetchApi<T>(
   }
   const res = await fetch(url, {
     ...rest,
+    credentials: "include",
     headers: { "Content-Type": "application/json", ...rest.headers },
   });
   if (!res.ok) {
@@ -196,6 +262,7 @@ export const api = {
     ): Promise<{ success: true; item: Item; task: Task } | { success: false; reason: string; gate_failed?: GateFailure["gate_failed"]; failures?: GateFailure["failures"]; missing_inputs?: string[]; suggested_questions?: string[] }> => {
       const res = await fetch(`${API_URL}/items/${id}/disposition/next_action`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
@@ -211,6 +278,7 @@ export const api = {
     ): Promise<{ item: Item; project: Project; task?: Task | null; createdAsClarifying?: boolean; reason?: string }> => {
       const res = await fetch(`${API_URL}/items/${id}/disposition/project`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
@@ -237,6 +305,7 @@ export const api = {
     ): Promise<{ ok: boolean; task: Task; projectId?: string; nextActionRequired?: boolean }> => {
       const res = await fetch(`${API_URL}/tasks/${id}/complete`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(options ?? {}),
       });
@@ -291,7 +360,7 @@ export const api = {
     listSources: () =>
       fetchApi<{ id: string; name: string; kind: string; lastSyncedAt: string | null; createdAt: string }[]>("/calendars/sources"),
     deleteSource: async (id: string): Promise<void> => {
-      const res = await fetch(`${API_URL}/calendars/sources/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_URL}/calendars/sources/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error((err as { error?: string }).error || res.statusText);
@@ -303,6 +372,7 @@ export const api = {
       if (name) form.append("name", name);
       const res = await fetch(`${API_URL}/calendars/import`, {
         method: "POST",
+        credentials: "include",
         body: form,
       });
       if (!res.ok) {
@@ -373,6 +443,7 @@ export const api = {
       files.forEach((f) => form.append("file", f));
       const res = await fetch(`${API_URL}/intake/upload`, {
         method: "POST",
+        credentials: "include",
         body: form,
       });
       if (!res.ok) {

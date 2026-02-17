@@ -20,13 +20,17 @@ const patchSessionSchema = z.object({
   completedAt: z.string().nullable().optional(),
 });
 
+const getUserId = (req: Request): string | null => (req.session as { userId?: string }).userId ?? null;
+
 reviewsRouter.post("/sessions", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = postSessionSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const session = await reviewsService.createSession(parsed.data.type);
+    const session = await reviewsService.createSession(userId, parsed.data.type);
     res.status(201).json(session);
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -34,12 +38,14 @@ reviewsRouter.post("/sessions", async (req: Request, res: Response) => {
 });
 
 reviewsRouter.patch("/sessions/:id", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = patchSessionSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const result = await reviewsService.updateSession(req.params.id, parsed.data);
+    const result = await reviewsService.updateSession(req.params.id, userId, parsed.data);
     if (result === null) return res.status(404).json({ error: "Session not found" });
     res.json(result);
   } catch (e) {
@@ -47,9 +53,11 @@ reviewsRouter.patch("/sessions/:id", async (req: Request, res: Response) => {
   }
 });
 
-reviewsRouter.get("/daily/snapshot", async (_req: Request, res: Response) => {
+reviewsRouter.get("/daily/snapshot", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getDailySnapshot();
+    const data = await reviewsService.getDailySnapshot(userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -57,17 +65,21 @@ reviewsRouter.get("/daily/snapshot", async (_req: Request, res: Response) => {
 });
 
 reviewsRouter.get("/daily/step/:stepId", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getDailyStep(req.params.stepId);
+    const data = await reviewsService.getDailyStep(req.params.stepId, userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
   }
 });
 
-reviewsRouter.get("/weekly/snapshot", async (_req: Request, res: Response) => {
+reviewsRouter.get("/weekly/snapshot", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getWeeklySnapshot();
+    const data = await reviewsService.getWeeklySnapshot(userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -75,26 +87,32 @@ reviewsRouter.get("/weekly/snapshot", async (_req: Request, res: Response) => {
 });
 
 reviewsRouter.get("/weekly/step/:stepId", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getWeeklyStep(req.params.stepId);
+    const data = await reviewsService.getWeeklyStep(req.params.stepId, userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
   }
 });
 
-reviewsRouter.get("/daily", async (_req: Request, res: Response) => {
+reviewsRouter.get("/daily", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getDailyReview();
+    const data = await reviewsService.getDailyReview(userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
   }
 });
 
-reviewsRouter.get("/weekly", async (_req: Request, res: Response) => {
+reviewsRouter.get("/weekly", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const data = await reviewsService.getWeeklyReview();
+    const data = await reviewsService.getWeeklyReview(userId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -102,12 +120,14 @@ reviewsRouter.get("/weekly", async (_req: Request, res: Response) => {
 });
 
 reviewsRouter.post("/weekly", async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = postWeeklySchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    await reviewsService.postWeeklyReview(parsed.data);
+    await reviewsService.postWeeklyReview(userId, parsed.data);
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: String(e) });

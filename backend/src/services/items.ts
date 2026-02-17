@@ -9,8 +9,8 @@ const itemInclude = {
   reminders: true,
 };
 
-export async function listItems(state?: ItemState) {
-  const where = state ? { state } : {};
+export async function listItems(userId: string, state?: ItemState) {
+  const where = state ? { userId, state } : { userId };
   return prisma.item.findMany({
     where,
     include: itemInclude,
@@ -19,10 +19,11 @@ export async function listItems(state?: ItemState) {
 }
 
 /** WAITING items that have at least one reminder with dueAt <= now (follow-up due). For Now list. */
-export async function listWaitingWithFollowUpDue() {
+export async function listWaitingWithFollowUpDue(userId: string) {
   const now = new Date();
   return prisma.item.findMany({
     where: {
+      userId,
       state: "WAITING",
       reminders: {
         some: { dueAt: { lte: now } },
@@ -33,15 +34,15 @@ export async function listWaitingWithFollowUpDue() {
   });
 }
 
-export async function getItem(id: string) {
-  return prisma.item.findUnique({
-    where: { id },
+export async function getItem(id: string, userId?: string) {
+  return prisma.item.findFirst({
+    where: userId ? { id, userId } : { id },
     include: itemInclude,
   });
 }
 
-export async function addReminder(itemId: string, dueAt: Date, kind: string = "follow_up") {
-  const item = await getItem(itemId);
+export async function addReminder(itemId: string, userId: string, dueAt: Date, kind: string = "follow_up") {
+  const item = await getItem(itemId, userId);
   if (!item) return null;
   return prisma.reminder.create({
     data: { itemId, dueAt, kind },
@@ -57,12 +58,15 @@ export type AttachmentInput = {
   size?: number;
 };
 
-export async function createItem(data: {
-  title: string;
-  body?: string;
-  source?: string;
-  attachments?: AttachmentInput[];
-}) {
+export async function createItem(
+  userId: string,
+  data: {
+    title: string;
+    body?: string;
+    source?: string;
+    attachments?: AttachmentInput[];
+  }
+) {
   const titlePreview = (data.title?.trim() || "Untitled").slice(0, 50);
   const attachmentsCount = data.attachments?.length ?? 0;
   console.log(`[ITEMS_SVC] createItem input titlePreview="${titlePreview}" source=${data.source ?? ""} attachments=${attachmentsCount}`);
@@ -80,6 +84,7 @@ export async function createItem(data: {
         })) as unknown)
       : undefined;
   const createData = {
+    userId,
     title,
     body: bodyStr,
     source: data.source ?? "manual",
@@ -103,6 +108,7 @@ export async function createItem(data: {
 
 export async function patchItem(
   id: string,
+  userId: string,
   body: {
     disposition?: string;
     title?: string;
@@ -111,7 +117,7 @@ export async function patchItem(
     state?: ItemState;
   }
 ) {
-  const item = await getItem(id);
+  const item = await getItem(id, userId);
   if (!item) return null;
 
   const updates: Parameters<typeof prisma.item.update>[0]["data"] = {};
@@ -140,13 +146,14 @@ export async function patchItem(
  */
 export async function setDispositionNextAction(
   itemId: string,
+  userId: string,
   actionText: string,
   options?: { context?: string; energy?: string; estimatedMinutes?: number; dueDate?: string }
 ) {
   const rule = isPlausibleNextAction(actionText);
   if (!rule.valid) return { success: false, reason: rule.reason, item: null };
 
-  const item = await getItem(itemId);
+  const item = await getItem(itemId, userId);
   if (!item) return { success: false, reason: "Item not found", item: null };
 
   const context = options?.context as "calls" | "errands" | "computer" | "deep_work" | undefined;
@@ -154,6 +161,7 @@ export async function setDispositionNextAction(
 
   const task = await prisma.task.create({
     data: {
+      userId,
       itemId,
       actionText: actionText.trim(),
       context: context ?? null,
@@ -168,7 +176,7 @@ export async function setDispositionNextAction(
     data: { type: "task", state: "ACTIONABLE" },
   });
 
-  const updated = await getItem(itemId);
+  const updated = await getItem(itemId, userId);
   return { success: true, item: updated, task };
 }
 
@@ -176,8 +184,8 @@ export async function setDispositionNextAction(
  * Create a new ACTIONABLE task from a WAITING item (follow-up due).
  * Action text: "Follow up with {waitingOn} re: {title}". Original item stays WAITING.
  */
-export async function createFollowUpTaskFromWaiting(itemId: string) {
-  const item = await getItem(itemId);
+export async function createFollowUpTaskFromWaiting(itemId: string, userId: string) {
+  const item = await getItem(itemId, userId);
   if (!item) return { success: false, reason: "Item not found" };
   if (item.state !== "WAITING") return { success: false, reason: "Item is not WAITING" };
   const now = new Date();
@@ -188,24 +196,25 @@ export async function createFollowUpTaskFromWaiting(itemId: string) {
   const topic = item.title?.trim() || "pending";
   const actionText = `Follow up with ${who} re: ${topic}`;
 
-  const newItem = await createItem({
+  const newItem = await createItem(userId, {
     title: actionText,
     body: item.body ? `(Follow-up from: ${item.title})\n\n${item.body}` : `(Follow-up from: ${item.title})`,
     source: "review_follow_up",
   });
-  const result = await setDispositionNextAction(newItem.id, actionText);
+  const result = await setDispositionNextAction(newItem.id, userId, actionText);
   if (!result.success) return { success: false, reason: result.reason ?? "Failed to create task" };
-  const updated = await getItem(newItem.id);
+  const updated = await getItem(newItem.id, userId);
   return { success: true, item: updated!, task: updated!.task ?? result.task };
 }
 
 export async function setDispositionProject(
   itemId: string,
+  userId: string,
   outcomeStatement: string,
   nextActionText: string,
   options?: { dueDate?: string; priority?: number }
 ) {
-  const item = await getItem(itemId);
+  const item = await getItem(itemId, userId);
   if (!item) return { success: false, reason: "Item not found", item: null, project: null };
 
   const outcome = outcomeStatement.trim();
@@ -216,7 +225,7 @@ export async function setDispositionProject(
   let taskId: string | null = null;
   if (nextAction && rule.valid) {
     const task = await prisma.task.create({
-      data: { itemId, actionText: nextAction },
+      data: { userId, itemId, actionText: nextAction },
     });
     taskId = task.id;
   }
@@ -224,6 +233,7 @@ export async function setDispositionProject(
   const status = outcomeOk && taskId ? "ACTIVE" : "CLARIFYING";
   const project = await prisma.project.create({
     data: {
+      userId,
       itemId,
       outcomeStatement: outcome || null,
       status,
@@ -247,7 +257,7 @@ export async function setDispositionProject(
     data: { type: "project", state: "PROJECT" },
   });
 
-  const updated = await getItem(itemId);
+  const updated = await getItem(itemId, userId);
   const task = taskId ? await prisma.task.findUnique({ where: { id: taskId }, include: { item: true, project: true, projectNextAction: true } }) : null;
   return {
     success: true,

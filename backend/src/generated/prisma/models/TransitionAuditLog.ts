@@ -26,6 +26,7 @@ export type AggregateTransitionAuditLog = {
 
 export type TransitionAuditLogMinAggregateOutputType = {
   id: string | null
+  userId: string | null
   itemId: string | null
   fromState: string | null
   toStateAttempted: string | null
@@ -38,6 +39,7 @@ export type TransitionAuditLogMinAggregateOutputType = {
 
 export type TransitionAuditLogMaxAggregateOutputType = {
   id: string | null
+  userId: string | null
   itemId: string | null
   fromState: string | null
   toStateAttempted: string | null
@@ -50,6 +52,7 @@ export type TransitionAuditLogMaxAggregateOutputType = {
 
 export type TransitionAuditLogCountAggregateOutputType = {
   id: number
+  userId: number
   itemId: number
   fromState: number
   toStateAttempted: number
@@ -65,6 +68,7 @@ export type TransitionAuditLogCountAggregateOutputType = {
 
 export type TransitionAuditLogMinAggregateInputType = {
   id?: true
+  userId?: true
   itemId?: true
   fromState?: true
   toStateAttempted?: true
@@ -77,6 +81,7 @@ export type TransitionAuditLogMinAggregateInputType = {
 
 export type TransitionAuditLogMaxAggregateInputType = {
   id?: true
+  userId?: true
   itemId?: true
   fromState?: true
   toStateAttempted?: true
@@ -89,6 +94,7 @@ export type TransitionAuditLogMaxAggregateInputType = {
 
 export type TransitionAuditLogCountAggregateInputType = {
   id?: true
+  userId?: true
   itemId?: true
   fromState?: true
   toStateAttempted?: true
@@ -175,6 +181,7 @@ export type TransitionAuditLogGroupByArgs<ExtArgs extends runtime.Types.Extensio
 
 export type TransitionAuditLogGroupByOutputType = {
   id: string
+  userId: string | null
   itemId: string
   fromState: string
   toStateAttempted: string
@@ -209,6 +216,7 @@ export type TransitionAuditLogWhereInput = {
   OR?: Prisma.TransitionAuditLogWhereInput[]
   NOT?: Prisma.TransitionAuditLogWhereInput | Prisma.TransitionAuditLogWhereInput[]
   id?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  userId?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
   itemId?: Prisma.StringFilter<"TransitionAuditLog"> | string
   fromState?: Prisma.StringFilter<"TransitionAuditLog"> | string
   toStateAttempted?: Prisma.StringFilter<"TransitionAuditLog"> | string
@@ -218,10 +226,12 @@ export type TransitionAuditLogWhereInput = {
   reasons?: Prisma.JsonNullableFilter<"TransitionAuditLog">
   override?: Prisma.BoolFilter<"TransitionAuditLog"> | boolean
   overrideReason?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type TransitionAuditLogOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   itemId?: Prisma.SortOrder
   fromState?: Prisma.SortOrder
   toStateAttempted?: Prisma.SortOrder
@@ -231,6 +241,7 @@ export type TransitionAuditLogOrderByWithRelationInput = {
   reasons?: Prisma.SortOrderInput | Prisma.SortOrder
   override?: Prisma.SortOrder
   overrideReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type TransitionAuditLogWhereUniqueInput = Prisma.AtLeast<{
@@ -238,6 +249,7 @@ export type TransitionAuditLogWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TransitionAuditLogWhereInput | Prisma.TransitionAuditLogWhereInput[]
   OR?: Prisma.TransitionAuditLogWhereInput[]
   NOT?: Prisma.TransitionAuditLogWhereInput | Prisma.TransitionAuditLogWhereInput[]
+  userId?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
   itemId?: Prisma.StringFilter<"TransitionAuditLog"> | string
   fromState?: Prisma.StringFilter<"TransitionAuditLog"> | string
   toStateAttempted?: Prisma.StringFilter<"TransitionAuditLog"> | string
@@ -247,10 +259,12 @@ export type TransitionAuditLogWhereUniqueInput = Prisma.AtLeast<{
   reasons?: Prisma.JsonNullableFilter<"TransitionAuditLog">
   override?: Prisma.BoolFilter<"TransitionAuditLog"> | boolean
   overrideReason?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type TransitionAuditLogOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   itemId?: Prisma.SortOrder
   fromState?: Prisma.SortOrder
   toStateAttempted?: Prisma.SortOrder
@@ -270,6 +284,7 @@ export type TransitionAuditLogScalarWhereWithAggregatesInput = {
   OR?: Prisma.TransitionAuditLogScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TransitionAuditLogScalarWhereWithAggregatesInput | Prisma.TransitionAuditLogScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TransitionAuditLog"> | string
+  userId?: Prisma.StringNullableWithAggregatesFilter<"TransitionAuditLog"> | string | null
   itemId?: Prisma.StringWithAggregatesFilter<"TransitionAuditLog"> | string
   fromState?: Prisma.StringWithAggregatesFilter<"TransitionAuditLog"> | string
   toStateAttempted?: Prisma.StringWithAggregatesFilter<"TransitionAuditLog"> | string
@@ -292,10 +307,12 @@ export type TransitionAuditLogCreateInput = {
   reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   override?: boolean
   overrideReason?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutTransitionAuditLogsInput
 }
 
 export type TransitionAuditLogUncheckedCreateInput = {
   id?: string
+  userId?: string | null
   itemId: string
   fromState: string
   toStateAttempted: string
@@ -318,10 +335,12 @@ export type TransitionAuditLogUpdateInput = {
   reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   override?: Prisma.BoolFieldUpdateOperationsInput | boolean
   overrideReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutTransitionAuditLogsNestedInput
 }
 
 export type TransitionAuditLogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
   fromState?: Prisma.StringFieldUpdateOperationsInput | string
   toStateAttempted?: Prisma.StringFieldUpdateOperationsInput | string
@@ -335,6 +354,7 @@ export type TransitionAuditLogUncheckedUpdateInput = {
 
 export type TransitionAuditLogCreateManyInput = {
   id?: string
+  userId?: string | null
   itemId: string
   fromState: string
   toStateAttempted: string
@@ -361,6 +381,7 @@ export type TransitionAuditLogUpdateManyMutationInput = {
 
 export type TransitionAuditLogUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
   fromState?: Prisma.StringFieldUpdateOperationsInput | string
   toStateAttempted?: Prisma.StringFieldUpdateOperationsInput | string
@@ -372,8 +393,19 @@ export type TransitionAuditLogUncheckedUpdateManyInput = {
   overrideReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
+export type TransitionAuditLogListRelationFilter = {
+  every?: Prisma.TransitionAuditLogWhereInput
+  some?: Prisma.TransitionAuditLogWhereInput
+  none?: Prisma.TransitionAuditLogWhereInput
+}
+
+export type TransitionAuditLogOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type TransitionAuditLogCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
   fromState?: Prisma.SortOrder
   toStateAttempted?: Prisma.SortOrder
@@ -387,6 +419,7 @@ export type TransitionAuditLogCountOrderByAggregateInput = {
 
 export type TransitionAuditLogMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
   fromState?: Prisma.SortOrder
   toStateAttempted?: Prisma.SortOrder
@@ -399,6 +432,7 @@ export type TransitionAuditLogMaxOrderByAggregateInput = {
 
 export type TransitionAuditLogMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
   fromState?: Prisma.SortOrder
   toStateAttempted?: Prisma.SortOrder
@@ -409,10 +443,174 @@ export type TransitionAuditLogMinOrderByAggregateInput = {
   overrideReason?: Prisma.SortOrder
 }
 
+export type TransitionAuditLogCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput> | Prisma.TransitionAuditLogCreateWithoutUserInput[] | Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput | Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.TransitionAuditLogCreateManyUserInputEnvelope
+  connect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+}
+
+export type TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput> | Prisma.TransitionAuditLogCreateWithoutUserInput[] | Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput | Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.TransitionAuditLogCreateManyUserInputEnvelope
+  connect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+}
+
+export type TransitionAuditLogUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput> | Prisma.TransitionAuditLogCreateWithoutUserInput[] | Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput | Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.TransitionAuditLogUpsertWithWhereUniqueWithoutUserInput | Prisma.TransitionAuditLogUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.TransitionAuditLogCreateManyUserInputEnvelope
+  set?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  disconnect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  delete?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  connect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  update?: Prisma.TransitionAuditLogUpdateWithWhereUniqueWithoutUserInput | Prisma.TransitionAuditLogUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.TransitionAuditLogUpdateManyWithWhereWithoutUserInput | Prisma.TransitionAuditLogUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.TransitionAuditLogScalarWhereInput | Prisma.TransitionAuditLogScalarWhereInput[]
+}
+
+export type TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput> | Prisma.TransitionAuditLogCreateWithoutUserInput[] | Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput | Prisma.TransitionAuditLogCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.TransitionAuditLogUpsertWithWhereUniqueWithoutUserInput | Prisma.TransitionAuditLogUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.TransitionAuditLogCreateManyUserInputEnvelope
+  set?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  disconnect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  delete?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  connect?: Prisma.TransitionAuditLogWhereUniqueInput | Prisma.TransitionAuditLogWhereUniqueInput[]
+  update?: Prisma.TransitionAuditLogUpdateWithWhereUniqueWithoutUserInput | Prisma.TransitionAuditLogUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.TransitionAuditLogUpdateManyWithWhereWithoutUserInput | Prisma.TransitionAuditLogUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.TransitionAuditLogScalarWhereInput | Prisma.TransitionAuditLogScalarWhereInput[]
+}
+
+export type TransitionAuditLogCreateWithoutUserInput = {
+  id?: string
+  itemId: string
+  fromState: string
+  toStateAttempted: string
+  timestamp?: Date | string
+  actor: string
+  decision: string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: boolean
+  overrideReason?: string | null
+}
+
+export type TransitionAuditLogUncheckedCreateWithoutUserInput = {
+  id?: string
+  itemId: string
+  fromState: string
+  toStateAttempted: string
+  timestamp?: Date | string
+  actor: string
+  decision: string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: boolean
+  overrideReason?: string | null
+}
+
+export type TransitionAuditLogCreateOrConnectWithoutUserInput = {
+  where: Prisma.TransitionAuditLogWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput>
+}
+
+export type TransitionAuditLogCreateManyUserInputEnvelope = {
+  data: Prisma.TransitionAuditLogCreateManyUserInput | Prisma.TransitionAuditLogCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type TransitionAuditLogUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.TransitionAuditLogWhereUniqueInput
+  update: Prisma.XOR<Prisma.TransitionAuditLogUpdateWithoutUserInput, Prisma.TransitionAuditLogUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.TransitionAuditLogCreateWithoutUserInput, Prisma.TransitionAuditLogUncheckedCreateWithoutUserInput>
+}
+
+export type TransitionAuditLogUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.TransitionAuditLogWhereUniqueInput
+  data: Prisma.XOR<Prisma.TransitionAuditLogUpdateWithoutUserInput, Prisma.TransitionAuditLogUncheckedUpdateWithoutUserInput>
+}
+
+export type TransitionAuditLogUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.TransitionAuditLogScalarWhereInput
+  data: Prisma.XOR<Prisma.TransitionAuditLogUpdateManyMutationInput, Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserInput>
+}
+
+export type TransitionAuditLogScalarWhereInput = {
+  AND?: Prisma.TransitionAuditLogScalarWhereInput | Prisma.TransitionAuditLogScalarWhereInput[]
+  OR?: Prisma.TransitionAuditLogScalarWhereInput[]
+  NOT?: Prisma.TransitionAuditLogScalarWhereInput | Prisma.TransitionAuditLogScalarWhereInput[]
+  id?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  userId?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
+  itemId?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  fromState?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  toStateAttempted?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  timestamp?: Prisma.DateTimeFilter<"TransitionAuditLog"> | Date | string
+  actor?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  decision?: Prisma.StringFilter<"TransitionAuditLog"> | string
+  reasons?: Prisma.JsonNullableFilter<"TransitionAuditLog">
+  override?: Prisma.BoolFilter<"TransitionAuditLog"> | boolean
+  overrideReason?: Prisma.StringNullableFilter<"TransitionAuditLog"> | string | null
+}
+
+export type TransitionAuditLogCreateManyUserInput = {
+  id?: string
+  itemId: string
+  fromState: string
+  toStateAttempted: string
+  timestamp?: Date | string
+  actor: string
+  decision: string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: boolean
+  overrideReason?: string | null
+}
+
+export type TransitionAuditLogUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  itemId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromState?: Prisma.StringFieldUpdateOperationsInput | string
+  toStateAttempted?: Prisma.StringFieldUpdateOperationsInput | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actor?: Prisma.StringFieldUpdateOperationsInput | string
+  decision?: Prisma.StringFieldUpdateOperationsInput | string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  overrideReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type TransitionAuditLogUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  itemId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromState?: Prisma.StringFieldUpdateOperationsInput | string
+  toStateAttempted?: Prisma.StringFieldUpdateOperationsInput | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actor?: Prisma.StringFieldUpdateOperationsInput | string
+  decision?: Prisma.StringFieldUpdateOperationsInput | string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  overrideReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type TransitionAuditLogUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  itemId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromState?: Prisma.StringFieldUpdateOperationsInput | string
+  toStateAttempted?: Prisma.StringFieldUpdateOperationsInput | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actor?: Prisma.StringFieldUpdateOperationsInput | string
+  decision?: Prisma.StringFieldUpdateOperationsInput | string
+  reasons?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  override?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  overrideReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 
 
 export type TransitionAuditLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   itemId?: boolean
   fromState?: boolean
   toStateAttempted?: boolean
@@ -422,10 +620,12 @@ export type TransitionAuditLogSelect<ExtArgs extends runtime.Types.Extensions.In
   reasons?: boolean
   override?: boolean
   overrideReason?: boolean
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
 }, ExtArgs["result"]["transitionAuditLog"]>
 
 export type TransitionAuditLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   itemId?: boolean
   fromState?: boolean
   toStateAttempted?: boolean
@@ -435,10 +635,12 @@ export type TransitionAuditLogSelectCreateManyAndReturn<ExtArgs extends runtime.
   reasons?: boolean
   override?: boolean
   overrideReason?: boolean
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
 }, ExtArgs["result"]["transitionAuditLog"]>
 
 export type TransitionAuditLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   itemId?: boolean
   fromState?: boolean
   toStateAttempted?: boolean
@@ -448,10 +650,12 @@ export type TransitionAuditLogSelectUpdateManyAndReturn<ExtArgs extends runtime.
   reasons?: boolean
   override?: boolean
   overrideReason?: boolean
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
 }, ExtArgs["result"]["transitionAuditLog"]>
 
 export type TransitionAuditLogSelectScalar = {
   id?: boolean
+  userId?: boolean
   itemId?: boolean
   fromState?: boolean
   toStateAttempted?: boolean
@@ -463,13 +667,25 @@ export type TransitionAuditLogSelectScalar = {
   overrideReason?: boolean
 }
 
-export type TransitionAuditLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "itemId" | "fromState" | "toStateAttempted" | "timestamp" | "actor" | "decision" | "reasons" | "override" | "overrideReason", ExtArgs["result"]["transitionAuditLog"]>
+export type TransitionAuditLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "itemId" | "fromState" | "toStateAttempted" | "timestamp" | "actor" | "decision" | "reasons" | "override" | "overrideReason", ExtArgs["result"]["transitionAuditLog"]>
+export type TransitionAuditLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
+}
+export type TransitionAuditLogIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
+}
+export type TransitionAuditLogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.TransitionAuditLog$userArgs<ExtArgs>
+}
 
 export type $TransitionAuditLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TransitionAuditLog"
-  objects: {}
+  objects: {
+    user: Prisma.$UserPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    userId: string | null
     itemId: string
     fromState: string
     toStateAttempted: string
@@ -873,6 +1089,7 @@ readonly fields: TransitionAuditLogFieldRefs;
  */
 export interface Prisma__TransitionAuditLogClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  user<T extends Prisma.TransitionAuditLog$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransitionAuditLog$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -903,6 +1120,7 @@ export interface Prisma__TransitionAuditLogClient<T, Null = never, ExtArgs exten
  */
 export interface TransitionAuditLogFieldRefs {
   readonly id: Prisma.FieldRef<"TransitionAuditLog", 'String'>
+  readonly userId: Prisma.FieldRef<"TransitionAuditLog", 'String'>
   readonly itemId: Prisma.FieldRef<"TransitionAuditLog", 'String'>
   readonly fromState: Prisma.FieldRef<"TransitionAuditLog", 'String'>
   readonly toStateAttempted: Prisma.FieldRef<"TransitionAuditLog", 'String'>
@@ -929,6 +1147,10 @@ export type TransitionAuditLogFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * Filter, which TransitionAuditLog to fetch.
    */
   where: Prisma.TransitionAuditLogWhereUniqueInput
@@ -947,6 +1169,10 @@ export type TransitionAuditLogFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * Filter, which TransitionAuditLog to fetch.
    */
   where: Prisma.TransitionAuditLogWhereUniqueInput
@@ -964,6 +1190,10 @@ export type TransitionAuditLogFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Omit specific fields from the TransitionAuditLog
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
   /**
    * Filter, which TransitionAuditLog to fetch.
    */
@@ -1013,6 +1243,10 @@ export type TransitionAuditLogFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * Filter, which TransitionAuditLog to fetch.
    */
   where?: Prisma.TransitionAuditLogWhereInput
@@ -1061,6 +1295,10 @@ export type TransitionAuditLogFindManyArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * Filter, which TransitionAuditLogs to fetch.
    */
   where?: Prisma.TransitionAuditLogWhereInput
@@ -1104,6 +1342,10 @@ export type TransitionAuditLogCreateArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * The data needed to create a TransitionAuditLog.
    */
   data: Prisma.XOR<Prisma.TransitionAuditLogCreateInput, Prisma.TransitionAuditLogUncheckedCreateInput>
@@ -1137,6 +1379,10 @@ export type TransitionAuditLogCreateManyAndReturnArgs<ExtArgs extends runtime.Ty
    */
   data: Prisma.TransitionAuditLogCreateManyInput | Prisma.TransitionAuditLogCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1151,6 +1397,10 @@ export type TransitionAuditLogUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the TransitionAuditLog
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
   /**
    * The data needed to update a TransitionAuditLog.
    */
@@ -1203,6 +1453,10 @@ export type TransitionAuditLogUpdateManyAndReturnArgs<ExtArgs extends runtime.Ty
    * Limit how many TransitionAuditLogs to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1217,6 +1471,10 @@ export type TransitionAuditLogUpsertArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the TransitionAuditLog
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
   /**
    * The filter to search for the TransitionAuditLog to update in case it exists.
    */
@@ -1244,6 +1502,10 @@ export type TransitionAuditLogDeleteArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
+  /**
    * Filter which TransitionAuditLog to delete.
    */
   where: Prisma.TransitionAuditLogWhereUniqueInput
@@ -1264,6 +1526,25 @@ export type TransitionAuditLogDeleteManyArgs<ExtArgs extends runtime.Types.Exten
 }
 
 /**
+ * TransitionAuditLog.user
+ */
+export type TransitionAuditLog$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * TransitionAuditLog without action
  */
 export type TransitionAuditLogDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1275,4 +1556,8 @@ export type TransitionAuditLogDefaultArgs<ExtArgs extends runtime.Types.Extensio
    * Omit specific fields from the TransitionAuditLog
    */
   omit?: Prisma.TransitionAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransitionAuditLogInclude<ExtArgs> | null
 }

@@ -88,16 +88,17 @@ function parseEvents(icsContent: string): Array<{
 }
 
 export async function importIcsToSource(
+  userId: string,
   sourceName: string,
   icsContent: string
 ): Promise<ImportResult> {
   const events = parseEvents(icsContent);
   let sourceRecord = await prisma.calendarSource.findFirst({
-    where: { name: sourceName, kind: "ics_import" },
+    where: { userId, name: sourceName, kind: "ics_import" },
   });
   if (!sourceRecord) {
     sourceRecord = await prisma.calendarSource.create({
-      data: { name: sourceName, kind: "ics_import", lastSyncedAt: new Date() },
+      data: { userId, name: sourceName, kind: "ics_import", lastSyncedAt: new Date() },
     });
   } else {
     await prisma.calendarSource.update({

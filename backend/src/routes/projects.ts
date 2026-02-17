@@ -38,9 +38,11 @@ const completeProjectSchema = z.object({
 
 const assignProjectSchema = z.object({ itemId: z.string().min(1) });
 
-projectsRouter.get("/", async (_req: Request, res: Response) => {
+projectsRouter.get("/", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const list = await projectsService.listProjects();
+    const list = await projectsService.listProjects(userId);
     res.json(list);
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -48,8 +50,10 @@ projectsRouter.get("/", async (_req: Request, res: Response) => {
 });
 
 projectsRouter.get("/:id", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const project = await projectsService.getProject(req.params.id);
+    const project = await projectsService.getProject(req.params.id, userId);
     if (!project) return res.status(404).json({ error: "Not found" });
     res.json(project);
   } catch (e) {
@@ -58,12 +62,14 @@ projectsRouter.get("/:id", async (req: Request, res: Response) => {
 });
 
 projectsRouter.post("/", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = createProjectSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const result = await projectsService.createProject({
+    const result = await projectsService.createProject(userId, {
       itemId: parsed.data.itemId,
       outcomeStatement: parsed.data.outcomeStatement ?? "",
       nextActionText: parsed.data.nextActionText,
@@ -81,12 +87,14 @@ projectsRouter.post("/", async (req: Request, res: Response) => {
 });
 
 projectsRouter.post("/:id/assign", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const body = assignProjectSchema.safeParse(req.body);
     if (!body.success) {
       return res.status(400).json({ error: "Invalid body", details: body.error.flatten() });
     }
-    const result = await projectsService.assignItemToProject(req.params.id, body.data.itemId);
+    const result = await projectsService.assignItemToProject(req.params.id, body.data.itemId, userId);
     if (!result.success) {
       if (result.reason === "Project not found" || result.reason === "Item not found") {
         return res.status(404).json({ error: result.reason });
@@ -100,8 +108,10 @@ projectsRouter.post("/:id/assign", async (req: Request, res: Response) => {
 });
 
 projectsRouter.get("/:id/allowed-transitions", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
-    const project = await projectsService.getProject(req.params.id);
+    const project = await projectsService.getProject(req.params.id, userId);
     if (!project) return res.status(404).json({ error: "Not found" });
     const allowed = getAllowedProjectTransitions(project.status);
     res.json({ allowed });
@@ -111,12 +121,14 @@ projectsRouter.get("/:id/allowed-transitions", async (req: Request, res: Respons
 });
 
 projectsRouter.patch("/:id", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = patchProjectSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const result = await projectsService.patchProject(req.params.id, parsed.data);
+    const result = await projectsService.patchProject(req.params.id, userId, parsed.data);
     if (result && typeof result === "object" && "error" in result) return res.status(400).json({ error: result.error });
     if (!result) return res.status(404).json({ error: "Not found" });
     res.json(result);
@@ -126,12 +138,14 @@ projectsRouter.patch("/:id", async (req: Request, res: Response) => {
 });
 
 projectsRouter.post("/:id/complete", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const parsed = completeProjectSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const result = await projectsService.completeProject(req.params.id, {
+    const result = await projectsService.completeProject(req.params.id, userId, {
       confirmOutcome: parsed.data.confirmOutcome,
       remainingTaskPolicy: parsed.data.remainingTaskPolicy,
     });

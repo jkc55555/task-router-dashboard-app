@@ -8,6 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/User.js'
 export type * from './models/Item.js'
 export type * from './models/Task.js'
 export type * from './models/Project.js'

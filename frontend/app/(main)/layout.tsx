@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
+import { MainAuthGate } from "@/components/main-auth-gate";
+import { AccountMenu } from "@/components/account-menu";
 
 export default function MainLayout({
   children,
@@ -7,6 +9,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
+    <MainAuthGate>
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
         <nav className="flex items-center gap-3 flex-wrap">
@@ -43,10 +46,11 @@ export default function MainLayout({
           >
             + Capture
           </Link>
+          <AccountMenu />
         </div>
       </header>
       <main className="flex-1 p-4 md:p-6">{children}</main>
-      <Toaster />
     </div>
+    </MainAuthGate>
   );
 }

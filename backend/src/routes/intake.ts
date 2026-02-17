@@ -64,8 +64,10 @@ intakeRouter.post("/intake", checkIntakeApiKey, async (req: Request, res: Respon
     }
     const { title, body: bodyVal, source: src, attachments, externalId: _externalId, metadata: _metadata } = parsed.data;
     const normalizedTitle = title.trim() || "Untitled";
+    const userId = (req.session as { userId?: string }).userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
     console.log(`[INTAKE] POST /intake validation passed title="${normalizedTitle.slice(0, 50)}" source=${src ?? "intake"}`);
-    const item = await itemsService.createItem({
+    const item = await itemsService.createItem(userId, {
       title: normalizedTitle,
       body: bodyVal?.trim(),
       source: src ?? "intake",
@@ -104,6 +106,8 @@ intakeRouter.post("/intake/upload", upload.array("file", 10), async (req: Reques
 
 /** POST /intake/ics - multipart .ics file; imports into calendar and returns { sourceId, created, updated, total } */
 intakeRouter.post("/intake/ics", uploadIcs.single("ics"), async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   try {
     const file = (req as unknown as { file?: Express.Multer.File }).file;
     if (!file || !file.buffer) {
@@ -111,7 +115,7 @@ intakeRouter.post("/intake/ics", uploadIcs.single("ics"), async (req: Request, r
     }
     const name = (req.body?.name as string) || file.originalname || "Imported calendar";
     const icsContent = file.buffer.toString("utf-8");
-    const result = await calendarImport.importIcsToSource(name, icsContent);
+    const result = await calendarImport.importIcsToSource(userId, name, icsContent);
     res.status(201).json(result);
   } catch (e) {
     res.status(500).json({ error: String(e) });
