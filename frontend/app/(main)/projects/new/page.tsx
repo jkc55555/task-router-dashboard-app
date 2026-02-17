@@ -46,10 +46,17 @@ export default function NewProjectPage() {
         priority,
         themeTag: themeTag.trim() || undefined,
       });
+      if (!project?.id) {
+        setError("Server did not return the created project");
+        toast.error("Server did not return the created project");
+        return;
+      }
       toast.success("Project created");
       router.push(`/projects/${project.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to create project");
+      const message = e instanceof Error ? e.message : "Failed to create project";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

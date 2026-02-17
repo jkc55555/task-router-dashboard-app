@@ -31,13 +31,18 @@ export default function CapturePage() {
         attachments = uploads;
       }
       const item = await api.items.create({ title, body, source: "capture", attachments });
+      if (!item?.id) {
+        throw new Error("Server did not return the created item");
+      }
       toast.success("Saved to inbox");
       setSavedId(item.id);
       setText("");
       setFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      const message = e instanceof Error ? e.message : "Save failed";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -141,10 +146,10 @@ export default function CapturePage() {
         <button
           type="button"
           onClick={handleSave}
-          disabled={loading || (!text.trim() && files.length === 0)}
+          disabled={loading}
           className="rounded bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
-          Save to Inbox
+          {loading ? "Saving…" : "Save to Inbox"}
         </button>
       </div>
 

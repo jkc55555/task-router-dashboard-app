@@ -73,6 +73,7 @@ projectsRouter.post("/", async (req: Request, res: Response) => {
       themeTag: parsed.data.themeTag,
     });
     if (!result.success) return res.status(400).json({ reason: result.reason });
+    if (!result.project) return res.status(500).json({ error: "Project created but failed to load" });
     res.status(201).json(result.project);
   } catch (e) {
     res.status(500).json({ error: String(e) });
