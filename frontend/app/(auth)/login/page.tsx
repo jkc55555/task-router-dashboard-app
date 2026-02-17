@@ -2,18 +2,31 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
+
+const loadingShell = (
+  <div className="w-full max-w-sm text-center text-muted-foreground">
+    Loading…
+  </div>
+);
 
 function LoginForm() {
   const { user, loading, error, login, clearError } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return loadingShell;
+  }
 
   if (user && !loading) {
     router.replace(returnUrl);
@@ -36,11 +49,7 @@ function LoginForm() {
   }
 
   if (loading) {
-    return (
-      <div className="w-full max-w-sm text-center text-muted-foreground">
-        Loading…
-      </div>
-    );
+    return loadingShell;
   }
 
   return (
@@ -103,7 +112,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="w-full max-w-sm text-center text-muted-foreground">Loading…</div>}>
+    <Suspense fallback={loadingShell}>
       <LoginForm />
     </Suspense>
   );

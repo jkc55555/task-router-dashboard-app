@@ -2,17 +2,30 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 
-export default function RegisterPage() {
+const loadingShell = (
+  <div className="w-full max-w-sm text-center text-muted-foreground">
+    Loading…
+  </div>
+);
+
+function RegisterForm() {
   const { user, loading, error, register, clearError } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return loadingShell;
+  }
 
   if (user && !loading) {
     router.replace("/");
@@ -113,5 +126,13 @@ export default function RegisterPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={loadingShell}>
+      <RegisterForm />
+    </Suspense>
   );
 }
