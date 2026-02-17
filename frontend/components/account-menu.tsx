@@ -53,7 +53,7 @@ export function AccountMenu() {
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
-          <DropdownMenu.Content align="end" className="min-w-[200px]">
+          <DropdownMenu.Content align="end" className="z-50 min-w-[200px]">
             <div className="px-2 py-1.5 text-sm text-muted-foreground border-b border-border">
               Signed in as <span className="font-medium text-foreground truncate block">{user.email}</span>
             </div>

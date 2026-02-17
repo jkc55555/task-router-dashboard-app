@@ -12,7 +12,7 @@ export default function MainLayout({
     <MainAuthGate>
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
-        <nav className="flex items-center gap-3 flex-wrap">
+        <nav className="min-w-0 flex items-center gap-3 flex-wrap">
           <Link href="/" className="font-medium text-foreground hover:underline">
             Now
           </Link>
@@ -39,7 +39,7 @@ export default function MainLayout({
             Reference
           </Link>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-shrink-0 items-center gap-2">
           <Link
             href="/capture"
             className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
