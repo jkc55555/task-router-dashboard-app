@@ -63,7 +63,11 @@ export async function createItem(data: {
   source?: string;
   attachments?: AttachmentInput[];
 }) {
+  const titlePreview = (data.title?.trim() || "Untitled").slice(0, 50);
+  const attachmentsCount = data.attachments?.length ?? 0;
+  console.log(`[ITEMS_SVC] createItem input titlePreview="${titlePreview}" source=${data.source ?? ""} attachments=${attachmentsCount}`);
   const title = data.title.trim() || "Untitled";
+  const bodyStr = data.body?.trim() ?? "";
   const attachmentsJson =
     data.attachments && data.attachments.length > 0
       ? (data.attachments.map((a) => ({
@@ -75,17 +79,26 @@ export async function createItem(data: {
           size: a.size ?? null,
         })) as unknown)
       : undefined;
-  return prisma.item.create({
-    data: {
-      title,
-      body: data.body?.trim() ?? "",
-      source: data.source ?? "manual",
-      state: "INBOX",
-      type: "task",
-      attachments: attachmentsJson ?? undefined,
-    },
-    include: itemInclude,
-  });
+  const createData = {
+    title,
+    body: bodyStr,
+    source: data.source ?? "manual",
+    state: "INBOX" as const,
+    type: "task" as const,
+    attachments: attachmentsJson ?? undefined,
+  };
+  console.log(`[ITEMS_SVC] prisma.item.create called titleLen=${title.length} bodyLen=${bodyStr.length} source=${createData.source} state=${createData.state} type=${createData.type}`);
+  try {
+    const item = await prisma.item.create({
+      data: createData,
+      include: itemInclude,
+    });
+    console.log(`[ITEMS_SVC] prisma.item.create succeeded id=${item.id} title="${(item.title || "").slice(0, 50)}" state=${item.state} createdAt=${item.createdAt?.toISOString() ?? ""}`);
+    return item;
+  } catch (e) {
+    console.error("[ITEMS_SVC] createItem error", e instanceof Error ? e.message : String(e), e instanceof Error ? e.stack : "");
+    throw e;
+  }
 }
 
 export async function patchItem(

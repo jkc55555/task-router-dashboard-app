@@ -25,6 +25,23 @@ app.use(
 );
 app.use(express.json());
 
+app.use((req, _res, next) => {
+  const ts = new Date().toISOString();
+  const pathWithQuery = req.originalUrl || req.url || req.path;
+  const method = req.method;
+  let bodySummary = "";
+  if (["POST", "PUT", "PATCH"].includes(method) && req.body && typeof req.body === "object") {
+    const b = req.body as Record<string, unknown>;
+    const title = typeof b.title === "string" ? b.title : "";
+    const source = typeof b.source === "string" ? b.source : "";
+    const bodyLen = typeof b.body === "string" ? b.body.length : 0;
+    const attachments = Array.isArray(b.attachments) ? b.attachments.length : 0;
+    bodySummary = ` bodySummary: titleLen=${title.length} source=${source || "(none)"} bodyLen=${bodyLen} attachments=${attachments}`;
+  }
+  console.log(`${ts} ${method} ${pathWithQuery}${bodySummary}`);
+  next();
+});
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", ts: new Date().toISOString() });
 });

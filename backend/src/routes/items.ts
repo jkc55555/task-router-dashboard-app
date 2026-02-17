@@ -75,24 +75,42 @@ const transitionSchema = z.object({
 });
 
 itemsRouter.get("/items", async (req: Request, res: Response) => {
+  const state = req.query.state as ItemState | undefined;
+  console.log(`[ITEMS] GET /items state=${state ?? "undefined"}`);
   try {
-    const state = req.query.state as ItemState | undefined;
     const list = await itemsService.listItems(state);
+    const payload: Record<string, unknown> = { count: list.length };
+    if (state === "INBOX") payload.ids = list.map((i) => i.id);
+    console.log(`[ITEMS] listItems returned ${JSON.stringify(payload)}`);
     res.json(list);
   } catch (e) {
+    console.error("[ITEMS] GET /items error", e instanceof Error ? e.message : String(e), e instanceof Error ? e.stack : "");
     res.status(500).json({ error: String(e) });
   }
 });
 
 itemsRouter.post("/items", async (req: Request, res: Response) => {
+  const body = req.body as Record<string, unknown>;
+  const titleLen = typeof body?.title === "string" ? body.title.length : 0;
+  const source = typeof body?.source === "string" ? body.source : "";
+  const attachmentsCount = Array.isArray(body?.attachments) ? body.attachments.length : 0;
+  const bodyLen = typeof body?.body === "string" ? body.body.length : 0;
+  console.log(`[ITEMS] POST /items received titleLen=${titleLen} source=${source} bodyLen=${bodyLen} attachments=${attachmentsCount}`);
   try {
     const parsed = createItemSchema.safeParse(req.body);
     if (!parsed.success) {
+      console.log("[ITEMS] POST /items validation failed", JSON.stringify(parsed.error.flatten()));
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
+    const d = parsed.data;
+    console.log(`[ITEMS] POST /items validation passed title="${(d.title || "").slice(0, 50)}" source=${d.source ?? ""} attachments=${d.attachments?.length ?? 0}`);
+    console.log(`[ITEMS] createItem called title="${(d.title || "").slice(0, 50)}" source=${d.source ?? ""}`);
     const item = await itemsService.createItem(parsed.data);
+    console.log(`[ITEMS] createItem succeeded id=${item.id} title="${(item.title || "").slice(0, 50)}" state=${item.state}`);
+    console.log(`[ITEMS] POST /items responding 201 id=${item.id}`);
     res.status(201).json(item);
   } catch (e) {
+    console.error("[ITEMS] POST /items error", String(e), e instanceof Error ? e.stack : "");
     res.status(500).json({ error: String(e) });
   }
 });

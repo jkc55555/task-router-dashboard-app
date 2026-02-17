@@ -52,20 +52,30 @@ function checkIntakeApiKey(req: Request, res: Response, next: () => void): void 
 
 /** POST /intake - canonical intake: create inbox item (title, body?, source?, attachments?). */
 intakeRouter.post("/intake", checkIntakeApiKey, async (req: Request, res: Response) => {
+  const body = req.body as Record<string, unknown>;
+  const titlePreview = typeof body?.title === "string" ? body.title.slice(0, 50) : "";
+  const source = typeof body?.source === "string" ? body.source : "";
+  console.log(`[INTAKE] POST /intake received titlePreview="${titlePreview}" source=${source}`);
   try {
     const parsed = intakeBodySchema.safeParse(req.body);
     if (!parsed.success) {
+      console.log("[INTAKE] POST /intake validation failed", JSON.stringify(parsed.error.flatten()));
       return res.status(400).json({ error: "Invalid body", details: parsed.error.flatten() });
     }
-    const { title, body, source, attachments, externalId: _externalId, metadata: _metadata } = parsed.data;
+    const { title, body: bodyVal, source: src, attachments, externalId: _externalId, metadata: _metadata } = parsed.data;
+    const normalizedTitle = title.trim() || "Untitled";
+    console.log(`[INTAKE] POST /intake validation passed title="${normalizedTitle.slice(0, 50)}" source=${src ?? "intake"}`);
     const item = await itemsService.createItem({
-      title: title.trim() || "Untitled",
-      body: body?.trim(),
-      source: source ?? "intake",
+      title: normalizedTitle,
+      body: bodyVal?.trim(),
+      source: src ?? "intake",
       attachments,
     });
+    console.log(`[INTAKE] createItem succeeded id=${item.id}`);
+    console.log(`[INTAKE] POST /intake responding 201 id=${item.id}`);
     res.status(201).json(item);
   } catch (e) {
+    console.error("[INTAKE] POST /intake error", String(e), e instanceof Error ? e.stack : "");
     res.status(500).json({ error: String(e) });
   }
 });
