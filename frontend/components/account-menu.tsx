@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChangePasswordModal } from "@/components/change-password-modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function initials(email: string, name?: string | null): string {
   if (name?.trim()) {
@@ -27,6 +27,18 @@ export function AccountMenu() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const div = document.createElement("div");
+    div.id = "account-menu-portal";
+    div.className = "fixed inset-0 z-[9999] pointer-events-none";
+    document.body.appendChild(div);
+    setPortalContainer(div);
+    return () => {
+      document.body.removeChild(div);
+    };
+  }, []);
 
   if (!user) return null;
 
@@ -52,8 +64,8 @@ export function AccountMenu() {
             <ChevronDown className="size-4 text-muted-foreground" />
           </Button>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content align="end" className="z-50 min-w-[200px]">
+        <DropdownMenu.Portal container={portalContainer ?? undefined}>
+          <DropdownMenu.Content align="end" className="z-[100] min-w-[200px] pointer-events-auto">
             <div className="px-2 py-1.5 text-sm text-muted-foreground border-b border-border">
               Signed in as <span className="font-medium text-foreground truncate block">{user.email}</span>
             </div>

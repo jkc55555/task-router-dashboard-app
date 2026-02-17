@@ -11,7 +11,7 @@ export default function MainLayout({
   return (
     <MainAuthGate>
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+      <header className="relative z-40 border-b border-border px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
         <nav className="min-w-0 flex items-center gap-3 flex-wrap">
           <Link href="/" className="font-medium text-foreground hover:underline">
             Now
