@@ -20,6 +20,7 @@ const require = createRequire(import.meta.url);
 const ConnectPgSimple = require("connect-pg-simple")(session);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";

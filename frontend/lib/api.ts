@@ -2,6 +2,19 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001
 
 export type AuthUser = { id: string; email: string; name: string | null; theme?: string | null };
 
+/** Parse error from a non-ok response; avoids "Unexpected end of JSON input" when body is empty or not JSON. */
+async function parseAuthError(res: Response, fallback: string): Promise<never> {
+  const text = await res.text();
+  try {
+    const b = JSON.parse(text) as { error?: string };
+    throw new Error(b.error || fallback);
+  } catch (e) {
+    if (e instanceof SyntaxError || (e instanceof Error && e.message.includes("JSON")))
+      throw new Error("Server error");
+    throw e;
+  }
+}
+
 export const authApi = {
   me: (): Promise<{ user: AuthUser }> =>
     fetch(`${API_URL}/auth/me`, { credentials: "include" }).then((r) => {
@@ -14,12 +27,8 @@ export const authApi = {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-    }).then((r) => {
-      if (!r.ok) {
-        return r.json().then((b) => {
-          throw new Error((b as { error?: string }).error || "Login failed");
-        });
-      }
+    }).then(async (r) => {
+      if (!r.ok) await parseAuthError(r, "Login failed");
       return r.json();
     }),
   register: (email: string, password: string, name?: string): Promise<{ user: AuthUser }> =>
@@ -28,12 +37,8 @@ export const authApi = {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name }),
-    }).then((r) => {
-      if (!r.ok) {
-        return r.json().then((b) => {
-          throw new Error((b as { error?: string }).error || "Registration failed");
-        });
-      }
+    }).then(async (r) => {
+      if (!r.ok) await parseAuthError(r, "Registration failed");
       return r.json();
     }),
   logout: (): Promise<void> =>
@@ -46,12 +51,8 @@ export const authApi = {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ currentPassword, newPassword }),
-    }).then((r) => {
-      if (!r.ok) {
-        return r.json().then((b) => {
-          throw new Error((b as { error?: string }).error || "Change password failed");
-        });
-      }
+    }).then(async (r) => {
+      if (!r.ok) await parseAuthError(r, "Change password failed");
     }),
   patchMe: (data: { theme?: string; name?: string }): Promise<{ user: AuthUser }> =>
     fetch(`${API_URL}/auth/me`, {
@@ -59,8 +60,8 @@ export const authApi = {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) throw new Error("Update failed");
+    }).then(async (r) => {
+      if (!r.ok) await parseAuthError(r, "Update failed");
       return r.json();
     }),
 };
