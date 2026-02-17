@@ -1,10 +1,10 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import { z } from "zod";
-import { upload as storageUpload } from "../services/storage";
-import { getStorageConfig } from "../lib/intake-config";
-import * as itemsService from "../services/items";
-import * as calendarImport from "../services/calendar-import";
+import { upload as storageUpload } from "../services/storage.js";
+import { getStorageConfig } from "../lib/intake-config.js";
+import * as itemsService from "../services/items.js";
+import * as calendarImport from "../services/calendar-import.js";
 import path from "path";
 import fs from "fs/promises";
 

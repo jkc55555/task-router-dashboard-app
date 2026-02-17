@@ -1,5 +1,5 @@
 import ical from "node-ical";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 export type ImportResult = {
   sourceId: string;

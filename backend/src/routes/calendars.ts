@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
-import { prisma } from "../lib/prisma";
-import * as calendarImport from "../services/calendar-import";
+import { prisma } from "../lib/prisma.js";
+import * as calendarImport from "../services/calendar-import.js";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB
 

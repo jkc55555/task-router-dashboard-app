@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import * as deadlinesService from "../services/deadlines";
+import * as deadlinesService from "../services/deadlines.js";
 
 export const deadlinesRouter = Router();
 

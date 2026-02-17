@@ -1,12 +1,12 @@
-import { prisma } from "../lib/prisma";
-import { isTransitionAllowed } from "../lib/transition-rules";
-import { isPlausibleNextAction } from "../lib/state";
-import { verifyNextAction, verifyCompletion } from "../ai/verifier";
-import * as itemsService from "./items";
-import * as tasksService from "./tasks";
-import * as artifactsService from "./artifacts";
-import * as projectsService from "./projects";
-import type { ItemState } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import { isTransitionAllowed } from "../lib/transition-rules.js";
+import { isPlausibleNextAction } from "../lib/state.js";
+import { verifyNextAction, verifyCompletion } from "../ai/verifier.js";
+import * as itemsService from "./items.js";
+import * as tasksService from "./tasks.js";
+import * as artifactsService from "./artifacts.js";
+import * as projectsService from "./projects.js";
+import type { ItemState } from "../generated/prisma/client.js";
 
 export type TransitionPayload = {
   actionText?: string;

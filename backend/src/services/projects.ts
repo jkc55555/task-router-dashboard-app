@@ -1,9 +1,8 @@
-import { prisma } from "../lib/prisma";
-import { isPlausibleNextAction } from "../lib/state";
-import { isProjectTransitionAllowed } from "../lib/project-transition-rules";
-import { checkGateA, checkGateB } from "./project-gates";
-import type { ContextTag, EnergyLevel, ProjectStatus } from "@prisma/client";
-import type { ItemState } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import { isPlausibleNextAction } from "../lib/state.js";
+import { isProjectTransitionAllowed } from "../lib/project-transition-rules.js";
+import { checkGateA, checkGateB } from "./project-gates.js";
+import type { ContextTag, EnergyLevel, ProjectStatus, ItemState } from "../generated/prisma/client.js";
 
 const projectInclude = {
   item: true,

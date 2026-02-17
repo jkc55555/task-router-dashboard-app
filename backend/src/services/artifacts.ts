@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import type { ArtifactType } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import type { ArtifactType } from "../generated/prisma/client.js";
 
 export async function addArtifact(
   itemId: string,

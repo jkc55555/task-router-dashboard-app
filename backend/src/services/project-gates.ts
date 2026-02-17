@@ -1,7 +1,7 @@
-import { prisma } from "../lib/prisma";
-import { isPlausibleNextAction } from "../lib/state";
-import { verifyProjectOutcome, verifyProjectNextAction } from "../ai/verifier";
-import type { ProjectStatus } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import { isPlausibleNextAction } from "../lib/state.js";
+import { verifyProjectOutcome, verifyProjectNextAction } from "../ai/verifier.js";
+import type { ProjectStatus } from "../generated/prisma/client.js";
 
 const MIN_OUTCOME_LENGTH = 10;
 

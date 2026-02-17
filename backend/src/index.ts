@@ -3,13 +3,13 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs/promises";
-import { itemsRouter } from "./routes/items";
-import { tasksRouter } from "./routes/tasks";
-import { projectsRouter } from "./routes/projects";
-import { deadlinesRouter } from "./routes/deadlines";
-import { reviewsRouter } from "./routes/reviews";
-import { intakeRouter } from "./routes/intake";
-import { calendarsRouter } from "./routes/calendars";
+import { itemsRouter } from "./routes/items.js";
+import { tasksRouter } from "./routes/tasks.js";
+import { projectsRouter } from "./routes/projects.js";
+import { deadlinesRouter } from "./routes/deadlines.js";
+import { reviewsRouter } from "./routes/reviews.js";
+import { intakeRouter } from "./routes/intake.js";
+import { calendarsRouter } from "./routes/calendars.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -55,7 +55,7 @@ app.use("/reviews", reviewsRouter);
 app.use("/calendars", calendarsRouter);
 
 async function ensureUploadDir() {
-  const { getStorageConfig } = await import("./lib/intake-config");
+  const { getStorageConfig } = await import("./lib/intake-config.js");
   const config = getStorageConfig();
   if (config.provider === "local") {
     const dir = path.resolve(process.cwd(), config.localUploadDir);

@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@prisma/client";
+import type { ProjectStatus } from "../generated/prisma/client.js";
 
 /** Allowed (fromStatus, toStatus) transitions per spec §4. SOMEDAY treated like ON_HOLD. */
 const ALLOWED: Record<ProjectStatus, ProjectStatus[]> = {

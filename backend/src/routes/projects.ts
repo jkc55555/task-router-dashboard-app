@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { getAllowedProjectTransitions } from "../lib/project-transition-rules";
-import * as projectsService from "../services/projects";
+import { getAllowedProjectTransitions } from "../lib/project-transition-rules.js";
+import * as projectsService from "../services/projects.js";
 
 export const projectsRouter = Router();
 

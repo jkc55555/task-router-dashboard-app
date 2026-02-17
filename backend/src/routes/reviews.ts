@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import * as reviewsService from "../services/reviews";
+import * as reviewsService from "../services/reviews.js";
 
 export const reviewsRouter = Router();
 

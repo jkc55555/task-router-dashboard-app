@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import type { ContextTag, EnergyLevel } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import type { ContextTag, EnergyLevel } from "../generated/prisma/client.js";
 
 export const taskInclude = {
   item: true,

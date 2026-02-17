@@ -1,5 +1,5 @@
-import type { Task, Item, Project } from "@prisma/client";
-import { getNowRankingConfig } from "../lib/now-ranking-config";
+import type { Task, Item, Project } from "../generated/prisma/client.js";
+import { getNowRankingConfig } from "../lib/now-ranking-config.js";
 
 type ProjectWithTasks = Project & { tasks?: { id: string }[] };
 

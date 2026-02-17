@@ -1,4 +1,4 @@
-import type { ItemState, ItemType } from "@prisma/client";
+import type { ItemState, ItemType } from "../generated/prisma/client.js";
 
 const VAGUE_PLACEHOLDERS = [
   "tbd",

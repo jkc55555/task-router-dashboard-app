@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
-import { getStorageConfig } from "../lib/intake-config";
+import { getStorageConfig } from "../lib/intake-config.js";
 
 export type UploadInput = {
   buffer: Buffer;

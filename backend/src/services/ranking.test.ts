@@ -4,8 +4,8 @@
  */
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import type { TaskWithRelations } from "./ranking";
-import { rankAndTag, computeScore } from "./ranking";
+import type { TaskWithRelations } from "./ranking.js";
+import { rankAndTag, computeScore } from "./ranking.js";
 
 const now = new Date();
 

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import * as tasksService from "../services/tasks";
+import * as tasksService from "../services/tasks.js";
 
 export const tasksRouter = Router();
 
@@ -32,20 +32,20 @@ tasksRouter.get("/now", async (req: Request, res: Response) => {
     const wokenIds = await tasksService.wakeSnoozedTasks();
     const [tasks, followUpDueItems] = await Promise.all([
       tasksService.listActionableTasks(),
-      (await import("../services/items")).listWaitingWithFollowUpDue(),
+      (await import("../services/items.js")).listWaitingWithFollowUpDue(),
     ]);
-    const { rankAndTag } = await import("../services/ranking");
-    const { getNowRankingConfig } = await import("../lib/now-ranking-config");
+    const { rankAndTag } = await import("../services/ranking.js");
+    const { getNowRankingConfig } = await import("../lib/now-ranking-config.js");
     const maxTags = getNowRankingConfig().tags.max_tags;
     const { ranked, excluded } = rankAndTag(
-      tasks as import("../services/ranking").TaskWithRelations[],
+      tasks as import("../services/ranking.js").TaskWithRelations[],
       { filters, filterMode }
     );
 
     if (wokenIds.length > 0) {
       for (const r of ranked) {
         if (wokenIds.includes(r.task.id)) {
-          r.reasonTags = ["Snoozed until today", ...r.reasonTags.filter((t) => t !== "Snoozed until today")].slice(
+          r.reasonTags = ["Snoozed until today", ...r.reasonTags.filter((t: string) => t !== "Snoozed until today")].slice(
             0,
             maxTags
           );
@@ -55,7 +55,7 @@ tasksRouter.get("/now", async (req: Request, res: Response) => {
 
     const tasksOut = ranked.map((r) => r.task);
     const reasonTags: Record<string, string[]> = {};
-    const scoreBreakdowns: Record<string, import("../services/ranking").ScoreBreakdown> = {};
+    const scoreBreakdowns: Record<string, import("../services/ranking.js").ScoreBreakdown> = {};
     for (const r of ranked) {
       reasonTags[r.task.id] = r.reasonTags;
       scoreBreakdowns[r.task.id] = r.scoreBreakdown;
@@ -65,7 +65,7 @@ tasksRouter.get("/now", async (req: Request, res: Response) => {
       tasks: tasksOut,
       reasonTags,
       scoreBreakdowns,
-      excluded: excluded.map((e) => ({ task: e.task, reason: e.reason })),
+      excluded: excluded.map((e: { task: unknown; reason: string }) => ({ task: e.task, reason: e.reason })),
       followUpDue: followUpDueItems,
     });
   } catch (e) {
@@ -93,7 +93,7 @@ tasksRouter.patch("/:id", async (req: Request, res: Response) => {
 
     // When snoozedUntil is set, set linked item state to SNOOZED
     if (parsed.data.snoozedUntil !== undefined && task.itemId) {
-      const { prisma } = await import("../lib/prisma");
+      const { prisma } = await import("../lib/prisma.js");
       await prisma.item.update({
         where: { id: task.itemId },
         data: { state: "SNOOZED" },
@@ -106,11 +106,11 @@ tasksRouter.patch("/:id", async (req: Request, res: Response) => {
 
     // Edit invalidation: if actionText was updated and item is ACTIONABLE, re-run Gate 1
     if (parsed.data.actionText !== undefined && task.item?.state === "ACTIONABLE") {
-      const { isPlausibleNextAction } = await import("../lib/state");
-      const { verifyNextAction } = await import("../ai/verifier");
+      const { isPlausibleNextAction } = await import("../lib/state.js");
+      const { verifyNextAction } = await import("../ai/verifier.js");
       const rule = isPlausibleNextAction(task.actionText);
       if (!rule.valid) {
-        const { prisma } = await import("../lib/prisma");
+        const { prisma } = await import("../lib/prisma.js");
         if (task.itemId) {
           await prisma.item.update({
             where: { id: task.itemId },
@@ -130,7 +130,7 @@ tasksRouter.patch("/:id", async (req: Request, res: Response) => {
       }
       const verifierResult = await verifyNextAction(task.actionText);
       if (verifierResult.status !== "PASS") {
-        const { prisma } = await import("../lib/prisma");
+        const { prisma } = await import("../lib/prisma.js");
         if (task.itemId) {
           await prisma.item.update({
             where: { id: task.itemId },
@@ -160,7 +160,7 @@ tasksRouter.post("/:id/verify", async (req: Request, res: Response) => {
   try {
     const task = await tasksService.getTask(req.params.id);
     if (!task) return res.status(404).json({ error: "Not found" });
-    const { isPlausibleNextAction } = await import("../lib/state");
+    const { isPlausibleNextAction } = await import("../lib/state.js");
     const rule = isPlausibleNextAction(task.actionText);
     if (!rule.valid) {
       return res.json({
@@ -171,7 +171,7 @@ tasksRouter.post("/:id/verify", async (req: Request, res: Response) => {
         unverifiableClaims: [],
       });
     }
-    const { verifyNextAction } = await import("../ai/verifier");
+    const { verifyNextAction } = await import("../ai/verifier.js");
     const verifierResult = await verifyNextAction(task.actionText);
     res.json(verifierResult);
   } catch (e) {
@@ -193,7 +193,7 @@ tasksRouter.post("/:id/complete", async (req: Request, res: Response) => {
         suggested_questions: [],
       });
     }
-    const transitionService = await import("../services/transition");
+    const transitionService = await import("../services/transition.js");
     const body = (req.body as { force?: boolean; overrideReason?: string }) ?? {};
     const result = await transitionService.executeTransition(
       itemId,

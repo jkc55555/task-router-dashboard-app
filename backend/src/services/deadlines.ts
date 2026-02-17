@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 const startOfDay = (d: Date) => {
   const x = new Date(d);

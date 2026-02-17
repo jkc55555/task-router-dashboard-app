@@ -1,9 +1,9 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import * as itemsService from "../services/items";
-import * as artifactsService from "../services/artifacts";
-import * as transitionService from "../services/transition";
-import type { ItemState } from "@prisma/client";
+import * as itemsService from "../services/items.js";
+import * as artifactsService from "../services/artifacts.js";
+import * as transitionService from "../services/transition.js";
+import type { ItemState } from "../generated/prisma/client.js";
 
 export const itemsRouter = Router();
 
@@ -143,7 +143,7 @@ itemsRouter.post("/items/:id/classify", async (req: Request, res: Response) => {
   try {
     const item = await itemsService.getItem(req.params.id);
     if (!item) return res.status(404).json({ error: "Not found" });
-    const { classifyItem } = await import("../ai/worker");
+    const { classifyItem } = await import("../ai/worker.js");
     const result = await classifyItem(item.title, item.body);
     res.json(result);
   } catch (e) {

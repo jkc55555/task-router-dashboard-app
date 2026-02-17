@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { listProjectsWithoutNextAction, listProjectsByStatus } from "./projects";
-import type { ReviewSessionType } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import { listProjectsWithoutNextAction, listProjectsByStatus } from "./projects.js";
+import type { ReviewSessionType } from "../generated/prisma/client.js";
 
 function startOfToday(): Date {
   const d = new Date();

@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { dispositionToTypeAndState, isPlausibleNextAction } from "../lib/state";
-import type { ItemState, ItemType } from "@prisma/client";
+import { prisma } from "../lib/prisma.js";
+import { dispositionToTypeAndState, isPlausibleNextAction } from "../lib/state.js";
+import type { ItemState, ItemType } from "../generated/prisma/client.js";
 
 const itemInclude = {
   task: true,

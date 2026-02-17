@@ -1,4 +1,4 @@
-import type { ItemState } from "@prisma/client";
+import type { ItemState } from "../generated/prisma/client.js";
 
 /** Allowed (fromState, toState) transitions per spec §4. */
 const ALLOWED: Record<ItemState, ItemState[]> = {
