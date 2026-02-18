@@ -77,27 +77,10 @@ export default function NowPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="mb-6">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
           Now
         </h1>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/capture"
-            className="rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium"
-          >
-            + Capture
-          </Link>
-          <Link href="/inbox" className="text-zinc-600 dark:text-zinc-400 hover:underline">
-            Inbox
-          </Link>
-          <Link href="/projects" className="text-zinc-600 dark:text-zinc-400 hover:underline">
-            Projects
-          </Link>
-          <Link href="/deadlines" className="text-zinc-600 dark:text-zinc-400 hover:underline">
-            Deadlines
-          </Link>
-        </div>
       </div>
 
       <div className="mb-4">

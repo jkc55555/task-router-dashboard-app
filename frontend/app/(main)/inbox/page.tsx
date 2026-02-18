@@ -169,19 +169,11 @@ function InboxContent() {
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
           Inbox
         </h1>
-        <div className="flex items-center gap-2">
-          {reviewWeekly && sessionId && (
-            <span className="text-sm text-zinc-600 dark:text-zinc-400 mr-2">
-              {items.length} item{items.length !== 1 ? "s" : ""} left
-            </span>
-          )}
-          <Link
-            href="/capture"
-            className="rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium"
-          >
-            + Capture
-          </Link>
-        </div>
+        {reviewWeekly && sessionId && (
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            {items.length} item{items.length !== 1 ? "s" : ""} left
+          </span>
+        )}
       </div>
 
       {reviewWeekly && sessionId && (
