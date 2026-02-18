@@ -27,18 +27,26 @@ export function AccountMenu() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     const div = document.createElement("div");
     div.id = "account-menu-portal";
-    div.className = "fixed inset-0 z-[9999] pointer-events-none";
+    div.className = "fixed inset-0 z-[9999]";
+    div.style.pointerEvents = "none";
     document.body.appendChild(div);
     setPortalContainer(div);
     return () => {
       document.body.removeChild(div);
     };
   }, []);
+
+  useEffect(() => {
+    if (portalContainer) {
+      portalContainer.style.pointerEvents = open ? "auto" : "none";
+    }
+  }, [open, portalContainer]);
 
   if (!user) return null;
 
@@ -49,7 +57,7 @@ export function AccountMenu() {
 
   return (
     <>
-      <DropdownMenu.Root>
+      <DropdownMenu.Root open={open} onOpenChange={setOpen}>
         <DropdownMenu.Trigger asChild>
           <Button variant="ghost" size="sm" className="gap-1.5">
             <span
