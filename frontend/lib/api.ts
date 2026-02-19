@@ -2,6 +2,16 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001
 
 export type AuthUser = { id: string; email: string; name: string | null; theme?: string | null };
 
+/** Signal session expired and throw a user-friendly error. Use when any API returns 401. */
+function throwIfUnauthorized(res: Response): void {
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("session-expired"));
+    }
+    throw new Error("Session expired. Please log in again.");
+  }
+}
+
 /** Parse error from a non-ok response; avoids "Unexpected end of JSON input" when body is empty or not JSON. */
 async function parseAuthError(res: Response, fallback: string): Promise<never> {
   const text = await res.text();
@@ -92,6 +102,7 @@ async function fetchApi<T>(
     headers: { "Content-Type": "application/json", ...rest.headers },
   });
   if (!res.ok) {
+    throwIfUnauthorized(res);
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error((err as { error?: string; reason?: string }).error || (err as { reason?: string }).reason || res.statusText);
   }
@@ -267,6 +278,7 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      throwIfUnauthorized(res);
       const body = await res.json();
       if (res.ok) return body as { success: true; item: Item; task: Task };
       return { success: false, ...body } as { success: false; reason: string; gate_failed?: GateFailure["gate_failed"]; failures?: GateFailure["failures"]; missing_inputs?: string[]; suggested_questions?: string[] };
@@ -283,6 +295,7 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      throwIfUnauthorized(res);
       const body = await res.json();
       if (!res.ok) throw new Error((body as { reason?: string }).reason || "Failed");
       return body;
@@ -310,6 +323,7 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(options ?? {}),
       });
+      throwIfUnauthorized(res);
       const body = await res.json();
       if (res.ok) return body as { ok: boolean; task: Task; projectId?: string; nextActionRequired?: boolean };
       const err = new Error((body as { error?: string }).error || "Completion failed") as Error & { gateFailure?: GateFailure };
@@ -362,6 +376,7 @@ export const api = {
       fetchApi<{ id: string; name: string; kind: string; lastSyncedAt: string | null; createdAt: string }[]>("/calendars/sources"),
     deleteSource: async (id: string): Promise<void> => {
       const res = await fetch(`${API_URL}/calendars/sources/${id}`, { method: "DELETE", credentials: "include" });
+      throwIfUnauthorized(res);
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error((err as { error?: string }).error || res.statusText);
@@ -376,6 +391,7 @@ export const api = {
         credentials: "include",
         body: form,
       });
+      throwIfUnauthorized(res);
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error((err as { error?: string }).error || res.statusText);
@@ -447,6 +463,7 @@ export const api = {
         credentials: "include",
         body: form,
       });
+      throwIfUnauthorized(res);
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error((err as { error?: string }).error || res.statusText);

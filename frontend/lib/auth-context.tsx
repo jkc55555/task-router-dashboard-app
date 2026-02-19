@@ -37,6 +37,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshMe();
   }, [refreshMe]);
 
+  useEffect(() => {
+    const onSessionExpired = () => setUser(null);
+    window.addEventListener("session-expired", onSessionExpired);
+    return () => window.removeEventListener("session-expired", onSessionExpired);
+  }, []);
+
   const login = useCallback(
     async (email: string, password: string) => {
       setError(null);
