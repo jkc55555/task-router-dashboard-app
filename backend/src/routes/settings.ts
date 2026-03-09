@@ -15,6 +15,10 @@ function generateInboxToken(): string {
   return crypto.randomBytes(8).toString("base64url");
 }
 
+function isPostmarkDomain(parseDomain: string): boolean {
+  return !!parseDomain && (parseDomain.includes("postmarkapp.com") || parseDomain === "inbound.postmarkapp.com");
+}
+
 /** GET /settings/inbox-email - Return inbox email settings and address when enabled */
 settingsRouter.get("/inbox-email", requireAuth, async (req: Request, res: Response) => {
   try {
@@ -29,15 +33,16 @@ settingsRouter.get("/inbox-email", requireAuth, async (req: Request, res: Respon
     }
     const enabled = user.inboxEmailEnabled ?? false;
     const token = user.inboxEmailToken;
-    const postmarkMailboxConfigured = config.provider === "postmark" && !!config.postmarkMailbox;
+    const parseDomain = config.parseDomain;
+    const usePostmarkFormat = isPostmarkDomain(parseDomain);
+    const postmarkMailboxConfigured = usePostmarkFormat ? !!config.postmarkMailbox : true;
     let address: string | null = null;
-    if (config.enabled && config.parseDomain && enabled && token) {
-      if (config.provider === "postmark" && config.postmarkMailbox) {
-        address = `${config.postmarkMailbox}+${token}@${config.parseDomain}`;
-      } else if (config.provider !== "postmark") {
-        address = `inbox+${token}@${config.parseDomain}`;
+    if (config.enabled && parseDomain && enabled && token) {
+      if (usePostmarkFormat && config.postmarkMailbox) {
+        address = `${config.postmarkMailbox}+${token}@${parseDomain}`;
+      } else if (!usePostmarkFormat) {
+        address = `inbox+${token}@${parseDomain}`;
       }
-      // Postmark without mailbox: address stays null (inbox+token does not work for Postmark)
     }
     return res.json({ enabled, address, parseDomainConfigured: !!config.parseDomain, postmarkMailboxConfigured });
   } catch (e) {
@@ -84,13 +89,15 @@ settingsRouter.patch("/inbox-email", requireAuth, async (req: Request, res: Resp
     });
 
     const config = getInboundEmailConfig();
-    const postmarkMailboxConfigured = config.provider === "postmark" && !!config.postmarkMailbox;
+    const parseDomain = config.parseDomain;
+    const usePostmarkFormat = isPostmarkDomain(parseDomain);
+    const postmarkMailboxConfigured = usePostmarkFormat ? !!config.postmarkMailbox : true;
     let address: string | null = null;
-    if (config.enabled && config.parseDomain && updated.inboxEmailEnabled && updated.inboxEmailToken) {
-      if (config.provider === "postmark" && config.postmarkMailbox) {
-        address = `${config.postmarkMailbox}+${updated.inboxEmailToken}@${config.parseDomain}`;
-      } else if (config.provider !== "postmark") {
-        address = `inbox+${updated.inboxEmailToken}@${config.parseDomain}`;
+    if (config.enabled && parseDomain && updated.inboxEmailEnabled && updated.inboxEmailToken) {
+      if (usePostmarkFormat && config.postmarkMailbox) {
+        address = `${config.postmarkMailbox}+${updated.inboxEmailToken}@${parseDomain}`;
+      } else if (!usePostmarkFormat) {
+        address = `inbox+${updated.inboxEmailToken}@${parseDomain}`;
       }
     }
     return res.json({ enabled: updated.inboxEmailEnabled, address, postmarkMailboxConfigured });
