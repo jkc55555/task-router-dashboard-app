@@ -28,8 +28,10 @@
     "node-ical": "^0.25.1",
     "openai": "^4.52.0",
     "pg": "^8.13.0",
-    "zod": "^3.23.8",
-    "prisma": "^7.4.0"
+    "prisma": "^7.4.0",
+    "resend": "^6.9.3",
+    "svix": "^1.87.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/connect-pg-simple": "^7.0.3",

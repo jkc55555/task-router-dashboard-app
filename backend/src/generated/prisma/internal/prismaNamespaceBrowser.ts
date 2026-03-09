@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  AreaOfFocus: 'AreaOfFocus',
   Item: 'Item',
   Task: 'Task',
   Project: 'Project',
@@ -85,11 +86,31 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   name: 'name',
   theme: 'theme',
+  inboxEmailToken: 'inboxEmailToken',
+  inboxEmailEnabled: 'inboxEmailEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const AreaOfFocusScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  color: 'color',
+  archivedAt: 'archivedAt',
+  lastAcknowledgedAt: 'lastAcknowledgedAt',
+  lastAcknowledgedNote: 'lastAcknowledgedNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AreaOfFocusScalarFieldEnum = (typeof AreaOfFocusScalarFieldEnum)[keyof typeof AreaOfFocusScalarFieldEnum]
 
 
 export const ItemScalarFieldEnum = {
@@ -136,6 +157,7 @@ export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof Task
 export const ProjectScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  areaId: 'areaId',
   itemId: 'itemId',
   outcomeStatement: 'outcomeStatement',
   status: 'status',

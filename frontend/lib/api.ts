@@ -194,9 +194,23 @@ export type NowResponse = {
 
 export type ProjectStatus = "CLARIFYING" | "ACTIVE" | "WAITING" | "SOMEDAY" | "ON_HOLD" | "DONE" | "ARCHIVED";
 
+export type AreaOfFocus = {
+  id: string;
+  name: string;
+  description?: string | null;
+  color?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  archivedAt?: string | null;
+  lastAcknowledgedAt?: string | null;
+  lastAcknowledgedNote?: string | null;
+};
+
 export type Project = {
   id: string;
   itemId: string | null;
+  areaId?: string | null;
+  area?: AreaOfFocus | null;
   outcomeStatement: string | null;
   status: ProjectStatus;
   nextActionTaskId?: string | null;
@@ -336,6 +350,7 @@ export const api = {
     get: (id: string) => fetchApi<Project>(`/projects/${id}`),
     create: (data: {
       itemId?: string;
+      areaId?: string | null;
       outcomeStatement?: string;
       nextActionText?: string;
       status?: ProjectStatus;
@@ -348,6 +363,7 @@ export const api = {
       nextActionTaskId?: string | null;
       nextActionText?: string;
       status?: ProjectStatus;
+      areaId?: string | null;
       dueDate?: string | null;
       priority?: number;
       focusThisWeek?: boolean;
@@ -362,6 +378,21 @@ export const api = {
       fetchApi<Project>(`/projects/${id}/complete`, { method: "POST", body: JSON.stringify(data) }),
     assignItem: (projectId: string, itemId: string) =>
       fetchApi<Project>(`/projects/${projectId}/assign`, { method: "POST", body: JSON.stringify({ itemId }) }),
+  },
+  areas: {
+    list: (includeArchived?: boolean) =>
+      fetchApi<AreaOfFocus[]>(includeArchived ? "/areas?archived=true" : "/areas"),
+    get: (id: string) => fetchApi<AreaOfFocus>(`/areas/${id}`),
+    create: (data: { name: string; description?: string; color?: string }) =>
+      fetchApi<AreaOfFocus>("/areas", { method: "POST", body: JSON.stringify(data) }),
+    patch: (id: string, data: { name?: string; description?: string | null; color?: string | null }) =>
+      fetchApi<AreaOfFocus>(`/areas/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+    archive: (id: string) =>
+      fetchApi<AreaOfFocus>(`/areas/${id}/archive`, { method: "POST" }),
+    restore: (id: string) =>
+      fetchApi<AreaOfFocus>(`/areas/${id}/restore`, { method: "POST" }),
+    acknowledge: (id: string, note?: string) =>
+      fetchApi<AreaOfFocus>(`/areas/${id}/acknowledge`, { method: "POST", body: JSON.stringify({ note }) }),
   },
   deadlines: {
     get: () =>
@@ -472,5 +503,14 @@ export const api = {
     },
     create: (data: { title: string; body?: string; source?: string; attachments?: Attachment[] }) =>
       fetchApi<Item>("/intake", { method: "POST", body: JSON.stringify(data) }),
+  },
+  settings: {
+    getInboxEmail: () =>
+      fetchApi<{ enabled: boolean; address: string | null; parseDomainConfigured: boolean }>("/settings/inbox-email"),
+    patchInboxEmail: (data: { enabled: boolean }) =>
+      fetchApi<{ enabled: boolean; address: string | null }>("/settings/inbox-email", {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
   },
 };

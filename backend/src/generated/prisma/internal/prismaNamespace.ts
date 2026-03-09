@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  AreaOfFocus: 'AreaOfFocus',
   Item: 'Item',
   Task: 'Task',
   Project: 'Project',
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "item" | "task" | "project" | "artifact" | "reminder" | "transitionAuditLog" | "reviewSession" | "calendarSource" | "calendarEvent"
+    modelProps: "user" | "areaOfFocus" | "item" | "task" | "project" | "artifact" | "reminder" | "transitionAuditLog" | "reviewSession" | "calendarSource" | "calendarEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -484,6 +485,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    AreaOfFocus: {
+      payload: Prisma.$AreaOfFocusPayload<ExtArgs>
+      fields: Prisma.AreaOfFocusFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AreaOfFocusFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AreaOfFocusFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        findFirst: {
+          args: Prisma.AreaOfFocusFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AreaOfFocusFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        findMany: {
+          args: Prisma.AreaOfFocusFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>[]
+        }
+        create: {
+          args: Prisma.AreaOfFocusCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        createMany: {
+          args: Prisma.AreaOfFocusCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AreaOfFocusCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>[]
+        }
+        delete: {
+          args: Prisma.AreaOfFocusDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        update: {
+          args: Prisma.AreaOfFocusUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        deleteMany: {
+          args: Prisma.AreaOfFocusDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AreaOfFocusUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AreaOfFocusUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>[]
+        }
+        upsert: {
+          args: Prisma.AreaOfFocusUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaOfFocusPayload>
+        }
+        aggregate: {
+          args: Prisma.AreaOfFocusAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAreaOfFocus>
+        }
+        groupBy: {
+          args: Prisma.AreaOfFocusGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AreaOfFocusGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AreaOfFocusCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AreaOfFocusCountAggregateOutputType> | number
         }
       }
     }
@@ -1198,11 +1273,31 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   name: 'name',
   theme: 'theme',
+  inboxEmailToken: 'inboxEmailToken',
+  inboxEmailEnabled: 'inboxEmailEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const AreaOfFocusScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  color: 'color',
+  archivedAt: 'archivedAt',
+  lastAcknowledgedAt: 'lastAcknowledgedAt',
+  lastAcknowledgedNote: 'lastAcknowledgedNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AreaOfFocusScalarFieldEnum = (typeof AreaOfFocusScalarFieldEnum)[keyof typeof AreaOfFocusScalarFieldEnum]
 
 
 export const ItemScalarFieldEnum = {
@@ -1249,6 +1344,7 @@ export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof Task
 export const ProjectScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  areaId: 'areaId',
   itemId: 'itemId',
   outcomeStatement: 'outcomeStatement',
   status: 'status',
@@ -1416,6 +1512,13 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1426,6 +1529,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1496,27 +1613,6 @@ export type EnumEnergyLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'EnergyLevel[]'
  */
 export type ListEnumEnergyLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EnergyLevel[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1685,6 +1781,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  areaOfFocus?: Prisma.AreaOfFocusOmit
   item?: Prisma.ItemOmit
   task?: Prisma.TaskOmit
   project?: Prisma.ProjectOmit

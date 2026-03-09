@@ -14,6 +14,9 @@ import { reviewsRouter } from "./routes/reviews.js";
 import { intakeRouter } from "./routes/intake.js";
 import { calendarsRouter } from "./routes/calendars.js";
 import { authRouter } from "./routes/auth.js";
+import { areasRouter } from "./routes/areas.js";
+import { settingsRouter } from "./routes/settings.js";
+import { webhooksRouter } from "./routes/webhooks.js";
 import { requireAuth } from "./middleware/requireAuth.js";
 
 const require = createRequire(import.meta.url);
@@ -33,7 +36,13 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      (req as { rawBody?: Buffer }).rawBody = buf;
+    },
+  })
+);
 
 const sessionSecret = process.env.SESSION_SECRET || "dev-secret-change-in-production";
 const sessionStore =
@@ -81,11 +90,14 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", ts: new Date().toISOString() });
 });
 
+app.use("/webhooks", webhooksRouter);
 app.use("/auth", authRouter);
 app.use(requireAuth);
 app.use(itemsRouter);
 app.use(intakeRouter);
 app.use("/tasks", tasksRouter);
+app.use("/areas", areasRouter);
+app.use("/settings", settingsRouter);
 app.use("/projects", projectsRouter);
 app.use("/deadlines", deadlinesRouter);
 app.use("/reviews", reviewsRouter);

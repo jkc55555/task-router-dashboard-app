@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model AreaOfFocus
+ * 
+ */
+export type AreaOfFocus = Prisma.AreaOfFocusModel
+/**
  * Model Item
  * 
  */

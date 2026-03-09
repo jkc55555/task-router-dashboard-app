@@ -8,19 +8,42 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  name         String?
-  theme        String?   // "light" | "dark" | "system"
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  name               String?
+  theme              String?   // "light" | "dark" | "system"
+  inboxEmailToken    String?   @unique
+  inboxEmailEnabled  Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
   items            Item[]
   projects         Project[]
   tasks            Task[]
   calendarSources  CalendarSource[]
   reviewSessions   ReviewSession[]
   transitionAuditLogs TransitionAuditLog[]
+  areasOfFocus     AreaOfFocus[]
+}
+
+model AreaOfFocus {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  description         String?
+  isActive            Boolean   @default(true)
+  sortOrder           Int       @default(0)
+  color               String?
+  archivedAt          DateTime?
+  lastAcknowledgedAt  DateTime?
+  lastAcknowledgedNote String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  projects            Project[]
+
+  @@unique([userId, name])
+  @@index([userId])
 }
 
 enum ItemType {
@@ -129,6 +152,8 @@ model Project {
   id                String        @id @default(cuid())
   userId            String
   user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  areaId            String?
+  area              AreaOfFocus?  @relation(fields: [areaId], references: [id], onDelete: SetNull)
   itemId            String?       @unique
   item              Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   outcomeStatement  String?
@@ -149,6 +174,7 @@ model Project {
   tasks             Task[]
 
   @@index([userId])
+  @@index([areaId])
 }
 
 model Artifact {

@@ -62,6 +62,32 @@ export type CalendarIntegrationConfig = {
   googleCredentials?: { clientId: string; clientSecret: string };
 };
 
+export type InboundEmailConfig = {
+  enabled: boolean;
+  parseDomain: string;
+  webhookSecret: string | null;
+  provider: "sendgrid" | "resend" | "none";
+  resendApiKey: string | null;
+  resendWebhookSecret: string | null;
+};
+
+export function getInboundEmailConfig(): InboundEmailConfig {
+  const enabled = process.env.INBOUND_EMAIL_ENABLED === "true";
+  const parseDomain = process.env.INBOUND_PARSE_DOMAIN || "";
+  const webhookSecret = process.env.INBOUND_WEBHOOK_SECRET || null;
+  const provider = (process.env.INBOUND_EMAIL_PROVIDER || "sendgrid") as "sendgrid" | "resend" | "none";
+  const resendApiKey = process.env.RESEND_API_KEY || null;
+  const resendWebhookSecret = process.env.RESEND_WEBHOOK_SECRET || null;
+  return {
+    enabled,
+    parseDomain,
+    webhookSecret,
+    provider,
+    resendApiKey,
+    resendWebhookSecret,
+  };
+}
+
 export function getCalendarIntegrationConfig(): CalendarIntegrationConfig {
   const microsoftEnabled = process.env.CALENDAR_MICROSOFT_ENABLED === "true";
   const googleEnabled = process.env.CALENDAR_GOOGLE_ENABLED === "true";

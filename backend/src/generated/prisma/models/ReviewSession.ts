@@ -473,14 +473,6 @@ export type EnumReviewSessionTypeFieldUpdateOperationsInput = {
   set?: $Enums.ReviewSessionType
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type ReviewSessionCreateWithoutUserInput = {
   id?: string
   type: $Enums.ReviewSessionType

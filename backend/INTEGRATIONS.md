@@ -17,7 +17,24 @@ This document lists environment-driven integration options and how to add Micros
 
 When `STORAGE_PROVIDER=local`, files are stored on disk and served at `GET /uploads/:key`. For S3, install `@aws-sdk/client-s3` and set the AWS env vars; attachment URLs will point to the bucket.
 
-### Email (future)
+### Inbound Email (email-to-inbox)
+
+Users can enable a unique address (e.g. `inbox+token@parse.yourdomain.com`) to forward/CC emails that become inbox items with attachments.
+
+| Variable | Description |
+|----------|-------------|
+| `INBOUND_EMAIL_ENABLED` | `true` to enable. Default: unset (disabled) |
+| `INBOUND_EMAIL_PROVIDER` | `sendgrid` or `resend`. Default: `sendgrid` |
+| `INBOUND_PARSE_DOMAIN` | Domain for receiving (e.g. `parse.taskrouter.com`). Must match MX/receiving hostname |
+| `INBOUND_WEBHOOK_SECRET` | Optional. For SendGrid: webhook auth via `Authorization: Bearer <secret>` or `X-Webhook-Secret` |
+| `RESEND_API_KEY` | Required when using Resend. API key from Resend dashboard |
+| `RESEND_WEBHOOK_SECRET` | Required when using Resend. Signing secret from Resend webhook config (Svix) |
+
+**SendGrid:** Configure Inbound Parse to POST to `POST /webhooks/inbound-email`. MX record to `mx.sendgrid.net`.
+
+**Resend:** Create a webhook in Resend pointing to `POST /webhooks/resend`, subscribe to `email.received`. Add a receiving domain in Resend, set its hostname as `INBOUND_PARSE_DOMAIN`. Resend verifies webhooks with Svix signatures.
+
+### Email (future — OAuth integrations)
 
 | Variable | Description |
 |----------|-------------|
@@ -28,7 +45,7 @@ When `STORAGE_PROVIDER=local`, files are stored on disk and served at `GET /uplo
 | `GOOGLE_CLIENT_ID` | For Google |
 | `GOOGLE_CLIENT_SECRET` | For Google |
 
-Email is not implemented yet. When added, the connector should post messages to **POST /intake** with `title`, `body`, `source`, and optional `attachments` / `externalId` / `metadata`.
+OAuth-based email is not implemented yet. When added, the connector should post messages to **POST /intake** with `title`, `body`, `source`, and optional `attachments` / `externalId` / `metadata`.
 
 ### Calendar
 

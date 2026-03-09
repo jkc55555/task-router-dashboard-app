@@ -749,10 +749,6 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type TaskCreateNestedOneWithoutProjectNextActionInput = {
   create?: Prisma.XOR<Prisma.TaskCreateWithoutProjectNextActionInput, Prisma.TaskUncheckedCreateWithoutProjectNextActionInput>
   connectOrCreate?: Prisma.TaskCreateOrConnectWithoutProjectNextActionInput

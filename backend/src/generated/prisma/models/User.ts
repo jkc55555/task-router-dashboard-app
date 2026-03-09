@@ -30,6 +30,8 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   name: string | null
   theme: string | null
+  inboxEmailToken: string | null
+  inboxEmailEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +42,8 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   name: string | null
   theme: string | null
+  inboxEmailToken: string | null
+  inboxEmailEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +54,8 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   name: number
   theme: number
+  inboxEmailToken: number
+  inboxEmailEnabled: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -62,6 +68,8 @@ export type UserMinAggregateInputType = {
   passwordHash?: true
   name?: true
   theme?: true
+  inboxEmailToken?: true
+  inboxEmailEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +80,8 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   name?: true
   theme?: true
+  inboxEmailToken?: true
+  inboxEmailEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +92,8 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   name?: true
   theme?: true
+  inboxEmailToken?: true
+  inboxEmailEnabled?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -165,6 +177,8 @@ export type UserGroupByOutputType = {
   passwordHash: string
   name: string | null
   theme: string | null
+  inboxEmailToken: string | null
+  inboxEmailEnabled: boolean
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -196,6 +210,8 @@ export type UserWhereInput = {
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
   theme?: Prisma.StringNullableFilter<"User"> | string | null
+  inboxEmailToken?: Prisma.StringNullableFilter<"User"> | string | null
+  inboxEmailEnabled?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   items?: Prisma.ItemListRelationFilter
@@ -204,6 +220,7 @@ export type UserWhereInput = {
   calendarSources?: Prisma.CalendarSourceListRelationFilter
   reviewSessions?: Prisma.ReviewSessionListRelationFilter
   transitionAuditLogs?: Prisma.TransitionAuditLogListRelationFilter
+  areasOfFocus?: Prisma.AreaOfFocusListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -212,6 +229,8 @@ export type UserOrderByWithRelationInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   theme?: Prisma.SortOrderInput | Prisma.SortOrder
+  inboxEmailToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  inboxEmailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   items?: Prisma.ItemOrderByRelationAggregateInput
@@ -220,17 +239,20 @@ export type UserOrderByWithRelationInput = {
   calendarSources?: Prisma.CalendarSourceOrderByRelationAggregateInput
   reviewSessions?: Prisma.ReviewSessionOrderByRelationAggregateInput
   transitionAuditLogs?: Prisma.TransitionAuditLogOrderByRelationAggregateInput
+  areasOfFocus?: Prisma.AreaOfFocusOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  inboxEmailToken?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
   theme?: Prisma.StringNullableFilter<"User"> | string | null
+  inboxEmailEnabled?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   items?: Prisma.ItemListRelationFilter
@@ -239,7 +261,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   calendarSources?: Prisma.CalendarSourceListRelationFilter
   reviewSessions?: Prisma.ReviewSessionListRelationFilter
   transitionAuditLogs?: Prisma.TransitionAuditLogListRelationFilter
-}, "id" | "email">
+  areasOfFocus?: Prisma.AreaOfFocusListRelationFilter
+}, "id" | "email" | "inboxEmailToken">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -247,6 +270,8 @@ export type UserOrderByWithAggregationInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   theme?: Prisma.SortOrderInput | Prisma.SortOrder
+  inboxEmailToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  inboxEmailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -263,6 +288,8 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   theme?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  inboxEmailToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  inboxEmailEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -273,6 +300,8 @@ export type UserCreateInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -281,6 +310,7 @@ export type UserCreateInput = {
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -289,6 +319,8 @@ export type UserUncheckedCreateInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -297,6 +329,7 @@ export type UserUncheckedCreateInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -305,6 +338,8 @@ export type UserUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -313,6 +348,7 @@ export type UserUpdateInput = {
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -321,6 +357,8 @@ export type UserUncheckedUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -329,6 +367,7 @@ export type UserUncheckedUpdateInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -337,6 +376,8 @@ export type UserCreateManyInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -347,6 +388,8 @@ export type UserUpdateManyMutationInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -357,6 +400,8 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -367,6 +412,8 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   theme?: Prisma.SortOrder
+  inboxEmailToken?: Prisma.SortOrder
+  inboxEmailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -377,6 +424,8 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   theme?: Prisma.SortOrder
+  inboxEmailToken?: Prisma.SortOrder
+  inboxEmailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -387,6 +436,8 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
   theme?: Prisma.SortOrder
+  inboxEmailToken?: Prisma.SortOrder
+  inboxEmailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -409,8 +460,26 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutAreasOfFocusInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAreasOfFocusInput, Prisma.UserUncheckedCreateWithoutAreasOfFocusInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAreasOfFocusInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAreasOfFocusNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAreasOfFocusInput, Prisma.UserUncheckedCreateWithoutAreasOfFocusInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAreasOfFocusInput
+  upsert?: Prisma.UserUpsertWithoutAreasOfFocusInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAreasOfFocusInput, Prisma.UserUpdateWithoutAreasOfFocusInput>, Prisma.UserUncheckedUpdateWithoutAreasOfFocusInput>
 }
 
 export type UserCreateNestedOneWithoutItemsInput = {
@@ -499,12 +568,102 @@ export type UserUpdateOneRequiredWithoutCalendarSourcesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCalendarSourcesInput, Prisma.UserUpdateWithoutCalendarSourcesInput>, Prisma.UserUncheckedUpdateWithoutCalendarSourcesInput>
 }
 
+export type UserCreateWithoutAreasOfFocusInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.ItemCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
+  reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
+  transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAreasOfFocusInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
+  reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
+  transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAreasOfFocusInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAreasOfFocusInput, Prisma.UserUncheckedCreateWithoutAreasOfFocusInput>
+}
+
+export type UserUpsertWithoutAreasOfFocusInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAreasOfFocusInput, Prisma.UserUncheckedUpdateWithoutAreasOfFocusInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAreasOfFocusInput, Prisma.UserUncheckedCreateWithoutAreasOfFocusInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAreasOfFocusInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAreasOfFocusInput, Prisma.UserUncheckedUpdateWithoutAreasOfFocusInput>
+}
+
+export type UserUpdateWithoutAreasOfFocusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.ItemUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
+  reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
+  transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAreasOfFocusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
+  reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
+  transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutItemsInput = {
   id?: string
   email: string
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
@@ -512,6 +671,7 @@ export type UserCreateWithoutItemsInput = {
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutItemsInput = {
@@ -520,6 +680,8 @@ export type UserUncheckedCreateWithoutItemsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -527,6 +689,7 @@ export type UserUncheckedCreateWithoutItemsInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutItemsInput = {
@@ -551,6 +714,8 @@ export type UserUpdateWithoutItemsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
@@ -558,6 +723,7 @@ export type UserUpdateWithoutItemsInput = {
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutItemsInput = {
@@ -566,6 +732,8 @@ export type UserUncheckedUpdateWithoutItemsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -573,6 +741,7 @@ export type UserUncheckedUpdateWithoutItemsInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTasksInput = {
@@ -581,6 +750,8 @@ export type UserCreateWithoutTasksInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -588,6 +759,7 @@ export type UserCreateWithoutTasksInput = {
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTasksInput = {
@@ -596,6 +768,8 @@ export type UserUncheckedCreateWithoutTasksInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -603,6 +777,7 @@ export type UserUncheckedCreateWithoutTasksInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTasksInput = {
@@ -627,6 +802,8 @@ export type UserUpdateWithoutTasksInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -634,6 +811,7 @@ export type UserUpdateWithoutTasksInput = {
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTasksInput = {
@@ -642,6 +820,8 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -649,6 +829,7 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProjectsInput = {
@@ -657,6 +838,8 @@ export type UserCreateWithoutProjectsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -664,6 +847,7 @@ export type UserCreateWithoutProjectsInput = {
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProjectsInput = {
@@ -672,6 +856,8 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -679,6 +865,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProjectsInput = {
@@ -703,6 +890,8 @@ export type UserUpdateWithoutProjectsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -710,6 +899,7 @@ export type UserUpdateWithoutProjectsInput = {
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -718,6 +908,8 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -725,6 +917,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransitionAuditLogsInput = {
@@ -733,6 +926,8 @@ export type UserCreateWithoutTransitionAuditLogsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -740,6 +935,7 @@ export type UserCreateWithoutTransitionAuditLogsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransitionAuditLogsInput = {
@@ -748,6 +944,8 @@ export type UserUncheckedCreateWithoutTransitionAuditLogsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -755,6 +953,7 @@ export type UserUncheckedCreateWithoutTransitionAuditLogsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransitionAuditLogsInput = {
@@ -779,6 +978,8 @@ export type UserUpdateWithoutTransitionAuditLogsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -786,6 +987,7 @@ export type UserUpdateWithoutTransitionAuditLogsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransitionAuditLogsInput = {
@@ -794,6 +996,8 @@ export type UserUncheckedUpdateWithoutTransitionAuditLogsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -801,6 +1005,7 @@ export type UserUncheckedUpdateWithoutTransitionAuditLogsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReviewSessionsInput = {
@@ -809,6 +1014,8 @@ export type UserCreateWithoutReviewSessionsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -816,6 +1023,7 @@ export type UserCreateWithoutReviewSessionsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   calendarSources?: Prisma.CalendarSourceCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewSessionsInput = {
@@ -824,6 +1032,8 @@ export type UserUncheckedCreateWithoutReviewSessionsInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -831,6 +1041,7 @@ export type UserUncheckedCreateWithoutReviewSessionsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   calendarSources?: Prisma.CalendarSourceUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewSessionsInput = {
@@ -855,6 +1066,8 @@ export type UserUpdateWithoutReviewSessionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -862,6 +1075,7 @@ export type UserUpdateWithoutReviewSessionsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   calendarSources?: Prisma.CalendarSourceUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewSessionsInput = {
@@ -870,6 +1084,8 @@ export type UserUncheckedUpdateWithoutReviewSessionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -877,6 +1093,7 @@ export type UserUncheckedUpdateWithoutReviewSessionsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   calendarSources?: Prisma.CalendarSourceUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCalendarSourcesInput = {
@@ -885,6 +1102,8 @@ export type UserCreateWithoutCalendarSourcesInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemCreateNestedManyWithoutUserInput
@@ -892,6 +1111,7 @@ export type UserCreateWithoutCalendarSourcesInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCalendarSourcesInput = {
@@ -900,6 +1120,8 @@ export type UserUncheckedCreateWithoutCalendarSourcesInput = {
   passwordHash: string
   name?: string | null
   theme?: string | null
+  inboxEmailToken?: string | null
+  inboxEmailEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutUserInput
@@ -907,6 +1129,7 @@ export type UserUncheckedCreateWithoutCalendarSourcesInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   reviewSessions?: Prisma.ReviewSessionUncheckedCreateNestedManyWithoutUserInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedCreateNestedManyWithoutUserInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCalendarSourcesInput = {
@@ -931,6 +1154,8 @@ export type UserUpdateWithoutCalendarSourcesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUpdateManyWithoutUserNestedInput
@@ -938,6 +1163,7 @@ export type UserUpdateWithoutCalendarSourcesInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCalendarSourcesInput = {
@@ -946,6 +1172,8 @@ export type UserUncheckedUpdateWithoutCalendarSourcesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inboxEmailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemUncheckedUpdateManyWithoutUserNestedInput
@@ -953,6 +1181,7 @@ export type UserUncheckedUpdateWithoutCalendarSourcesInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   reviewSessions?: Prisma.ReviewSessionUncheckedUpdateManyWithoutUserNestedInput
   transitionAuditLogs?: Prisma.TransitionAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  areasOfFocus?: Prisma.AreaOfFocusUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -967,6 +1196,7 @@ export type UserCountOutputType = {
   calendarSources: number
   reviewSessions: number
   transitionAuditLogs: number
+  areasOfFocus: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -976,6 +1206,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   calendarSources?: boolean | UserCountOutputTypeCountCalendarSourcesArgs
   reviewSessions?: boolean | UserCountOutputTypeCountReviewSessionsArgs
   transitionAuditLogs?: boolean | UserCountOutputTypeCountTransitionAuditLogsArgs
+  areasOfFocus?: boolean | UserCountOutputTypeCountAreasOfFocusArgs
 }
 
 /**
@@ -1030,6 +1261,13 @@ export type UserCountOutputTypeCountTransitionAuditLogsArgs<ExtArgs extends runt
   where?: Prisma.TransitionAuditLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAreasOfFocusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AreaOfFocusWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1037,6 +1275,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   name?: boolean
   theme?: boolean
+  inboxEmailToken?: boolean
+  inboxEmailEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   items?: boolean | Prisma.User$itemsArgs<ExtArgs>
@@ -1045,6 +1285,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   calendarSources?: boolean | Prisma.User$calendarSourcesArgs<ExtArgs>
   reviewSessions?: boolean | Prisma.User$reviewSessionsArgs<ExtArgs>
   transitionAuditLogs?: boolean | Prisma.User$transitionAuditLogsArgs<ExtArgs>
+  areasOfFocus?: boolean | Prisma.User$areasOfFocusArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1054,6 +1295,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   name?: boolean
   theme?: boolean
+  inboxEmailToken?: boolean
+  inboxEmailEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1064,6 +1307,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   name?: boolean
   theme?: boolean
+  inboxEmailToken?: boolean
+  inboxEmailEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1074,11 +1319,13 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   name?: boolean
   theme?: boolean
+  inboxEmailToken?: boolean
+  inboxEmailEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "theme" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "theme" | "inboxEmailToken" | "inboxEmailEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.User$itemsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
@@ -1086,6 +1333,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   calendarSources?: boolean | Prisma.User$calendarSourcesArgs<ExtArgs>
   reviewSessions?: boolean | Prisma.User$reviewSessionsArgs<ExtArgs>
   transitionAuditLogs?: boolean | Prisma.User$transitionAuditLogsArgs<ExtArgs>
+  areasOfFocus?: boolean | Prisma.User$areasOfFocusArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1100,6 +1348,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     calendarSources: Prisma.$CalendarSourcePayload<ExtArgs>[]
     reviewSessions: Prisma.$ReviewSessionPayload<ExtArgs>[]
     transitionAuditLogs: Prisma.$TransitionAuditLogPayload<ExtArgs>[]
+    areasOfFocus: Prisma.$AreaOfFocusPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1107,6 +1356,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordHash: string
     name: string | null
     theme: string | null
+    inboxEmailToken: string | null
+    inboxEmailEnabled: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1509,6 +1760,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   calendarSources<T extends Prisma.User$calendarSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calendarSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewSessions<T extends Prisma.User$reviewSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transitionAuditLogs<T extends Prisma.User$transitionAuditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$transitionAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransitionAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  areasOfFocus<T extends Prisma.User$areasOfFocusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$areasOfFocusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AreaOfFocusPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1543,6 +1795,8 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly theme: Prisma.FieldRef<"User", 'String'>
+  readonly inboxEmailToken: Prisma.FieldRef<"User", 'String'>
+  readonly inboxEmailEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2074,6 +2328,30 @@ export type User$transitionAuditLogsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.TransitionAuditLogScalarFieldEnum | Prisma.TransitionAuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.areasOfFocus
+ */
+export type User$areasOfFocusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AreaOfFocus
+   */
+  select?: Prisma.AreaOfFocusSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AreaOfFocus
+   */
+  omit?: Prisma.AreaOfFocusOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AreaOfFocusInclude<ExtArgs> | null
+  where?: Prisma.AreaOfFocusWhereInput
+  orderBy?: Prisma.AreaOfFocusOrderByWithRelationInput | Prisma.AreaOfFocusOrderByWithRelationInput[]
+  cursor?: Prisma.AreaOfFocusWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AreaOfFocusScalarFieldEnum | Prisma.AreaOfFocusScalarFieldEnum[]
 }
 
 /**
