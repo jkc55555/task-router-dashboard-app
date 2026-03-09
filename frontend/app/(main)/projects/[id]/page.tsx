@@ -33,6 +33,7 @@ export default function ProjectDetailPage() {
   const [markDoneConfirm, setMarkDoneConfirm] = useState(false);
   const [markDoneLoading, setMarkDoneLoading] = useState(false);
   const [markDoneError, setMarkDoneError] = useState<string | null>(null);
+  const [areas, setAreas] = useState<{ id: string; name: string }[]>([]);
 
   const fetchProject = useCallback(() => {
     if (!id) return;
@@ -51,6 +52,10 @@ export default function ProjectDetailPage() {
       .catch((e) => setError(e instanceof Error ? e.message : "Not found"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    api.areas.list().then((list) => setAreas(list.map((a) => ({ id: a.id, name: a.name })))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (assignModal) {
@@ -92,6 +97,16 @@ export default function ProjectDetailPage() {
     try {
       await api.projects.patch(id, { status: newStatus });
       setProject((p) => (p ? { ...p, status: newStatus } : null));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Update failed");
+    }
+  };
+
+  const handleAreaChange = async (areaId: string | null) => {
+    if (!project) return;
+    try {
+      const updated = await api.projects.patch(id, { areaId });
+      setProject(updated);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Update failed");
     }
@@ -245,6 +260,23 @@ export default function ProjectDetailPage() {
             </select>
           </dd>
         </div>
+        {areas.length > 0 && (
+          <div>
+            <dt className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Area of focus</dt>
+            <dd>
+              <select
+                value={project.areaId ?? ""}
+                onChange={(e) => handleAreaChange(e.target.value || null)}
+                className="rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 text-sm text-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">None</option>
+                {areas.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+            </dd>
+          </div>
+        )}
         <div>
           <dt className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Theme tag</dt>
           <dd>

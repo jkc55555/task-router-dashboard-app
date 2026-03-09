@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { api, type ProjectStatus } from "@/lib/api";
@@ -10,6 +10,10 @@ const STATUSES: ProjectStatus[] = ["CLARIFYING", "ACTIVE", "WAITING", "SOMEDAY",
 
 export default function NewProjectPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const presetAreaId = searchParams.get("areaId") ?? "";
+  const [areas, setAreas] = useState<{ id: string; name: string }[]>([]);
+  const [areaId, setAreaId] = useState<string>(presetAreaId);
   const [outcomeStatement, setOutcomeStatement] = useState("");
   const [status, setStatus] = useState<ProjectStatus>("CLARIFYING");
   const [nextActionText, setNextActionText] = useState("");
@@ -18,6 +22,13 @@ export default function NewProjectPage() {
   const [themeTag, setThemeTag] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.areas.list().then((list) => setAreas(list.map((a) => ({ id: a.id, name: a.name })))).catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (presetAreaId) setAreaId(presetAreaId);
+  }, [presetAreaId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +50,7 @@ export default function NewProjectPage() {
     setError(null);
     try {
       const project = await api.projects.create({
+        areaId: areaId || null,
         outcomeStatement: outcome || undefined,
         status,
         nextActionText: nextAction || undefined,
@@ -89,6 +101,24 @@ export default function NewProjectPage() {
             rows={2}
           />
         </div>
+        {areas.length > 0 && (
+          <div>
+            <label htmlFor="area" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+              Area of focus (optional)
+            </label>
+            <select
+              id="area"
+              value={areaId}
+              onChange={(e) => setAreaId(e.target.value)}
+              className="rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-zinc-100"
+            >
+              <option value="">None</option>
+              {areas.map((a) => (
+                <option key={a.id} value={a.id}>{a.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label htmlFor="status" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
             Status

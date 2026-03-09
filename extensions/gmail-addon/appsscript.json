@@ -1,6 +1,29 @@
 {
-  "timeZone": "America/Denver",
-  "dependencies": {},
+  "timeZone": "America/Los_Angeles",
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly"
+  ],
+  "addOns": {
+    "common": {
+      "name": "GTD Inbox",
+      "logoUrl": "https://www.gstatic.com/images/branding/product/1x/gmail_48dp.png",
+      "openLinkUrlPrefixes": ["https://"],
+      "layoutProperties": {
+        "primaryColor": "#00897B",
+        "secondaryColor": "#5C4033"
+      },
+      "homepageTrigger": {
+        "runFunction": "onHomepageOpen"
+      }
+    },
+    "gmail": {
+      "contextualTriggers": [
+        {
+          "unconditional": {},
+          "onTriggerFunction": "onGmailMessageOpen"
+        }
+      ]
+    }
+  }
 }

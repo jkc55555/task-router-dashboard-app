@@ -9,6 +9,7 @@ const projectStatusEnum = z.enum(["CLARIFYING", "ACTIVE", "WAITING", "SOMEDAY", 
 
 const createProjectSchema = z.object({
   itemId: z.string().min(1).optional(),
+  areaId: z.string().min(1).nullable().optional(),
   outcomeStatement: z.string().optional(),
   nextActionText: z.string().min(1).optional(),
   status: projectStatusEnum.optional(),
@@ -22,6 +23,7 @@ const patchProjectSchema = z.object({
   nextActionTaskId: z.string().nullable().optional(),
   nextActionText: z.string().min(1).optional(),
   status: projectStatusEnum.optional(),
+  areaId: z.string().nullable().optional(),
   dueDate: z.string().nullable().optional(),
   priority: z.number().int().optional(),
   focusThisWeek: z.boolean().optional(),
@@ -71,6 +73,7 @@ projectsRouter.post("/", async (req: Request, res: Response) => {
     }
     const result = await projectsService.createProject(userId, {
       itemId: parsed.data.itemId,
+      areaId: parsed.data.areaId,
       outcomeStatement: parsed.data.outcomeStatement ?? "",
       nextActionText: parsed.data.nextActionText,
       status: parsed.data.status,

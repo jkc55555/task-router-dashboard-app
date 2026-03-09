@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, type Project } from "@/lib/api";
 
-type Step = "W1" | "W2" | "W3" | "W4" | "W5" | "W6" | "W7" | "W8" | "W9";
+type Step = "W1" | "W2" | "W3" | "W4" | "W4A" | "W5" | "W6" | "W7" | "W8" | "W9";
 
 type Snapshot = {
   inboxCount: number;
@@ -35,7 +35,7 @@ function ReviewContent() {
   const [sessionCounts, setSessionCounts] = useState({ processed: 0, skipped: 0 });
 
   useEffect(() => {
-    if (stepParam && ["W2","W3","W4","W5","W6","W7","W8","W9"].includes(stepParam)) {
+    if (stepParam && ["W2","W3","W4","W4A","W5","W6","W7","W8","W9"].includes(stepParam)) {
       setStep(stepParam);
     }
     if (sessionIdParam) setSessionId(sessionIdParam);
@@ -52,7 +52,7 @@ function ReviewContent() {
   }, [step]);
 
   useEffect(() => {
-    if (step === "W3" || step === "W4" || step === "W5") {
+    if (step === "W3" || step === "W4" || step === "W4A" || step === "W5") {
       setLoading(true);
       api.reviews
         .getWeeklyStep(step)
@@ -86,7 +86,7 @@ function ReviewContent() {
         itemsSkipped: skipped,
       });
       setSessionCounts((c) => ({ processed: c.processed + processed, skipped: c.skipped + skipped }));
-      const next: Step[] = ["W1","W2","W3","W4","W5","W6","W7","W8","W9"];
+      const next: Step[] = ["W1","W2","W3","W4","W4A","W5","W6","W7","W8","W9"];
       const i = next.indexOf(currentStep);
       const nextStep = next[i + 1] ?? "W9";
       setStep(nextStep);
@@ -218,6 +218,58 @@ function ReviewContent() {
               </ul>
               {stepData.items.length === 0 && <p className="text-zinc-500">None.</p>}
               <button type="button" onClick={() => goNext("W4", 0, 0)} className="rounded bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm">Next</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* W4A — Area Health Check */}
+      {step === "W4A" && (
+        <div className="space-y-4">
+          <h2 className="font-medium text-zinc-800 dark:text-zinc-200">Step 4A: Area Health Check</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+            Scan your responsibilities and ensure each has the right projects.
+          </p>
+          {loading ? (
+            <p className="text-zinc-500">Loading...</p>
+          ) : (
+            <>
+              {Array.isArray((stepData as { items?: unknown[] }).items) && (stepData as { items?: unknown[]; stats?: { needingAttention?: number; zeroActive?: number; stale?: number } }).items?.length === 0 ? (
+                <p className="text-zinc-500">No areas of focus. Add them in Settings → Areas of Focus.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {((stepData as { items?: Array<{ id: string; name: string; description?: string | null; activeCount: number; waitingCount: number; onHoldCount: number; lastActivity: string | null; hasZeroActive: boolean; isStale: boolean; onlyWaiting: boolean }> }).items ?? []).map((a) => (
+                    <li key={a.id} className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="font-medium">{a.name}</span>
+                        {a.hasZeroActive && <span className="rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 px-1.5 py-0.5 text-xs">0 Active</span>}
+                        {a.isStale && <span className="rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 text-xs">Stale</span>}
+                        {a.onlyWaiting && <span className="rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 text-xs">Only Waiting</span>}
+                        <span className="text-zinc-500 text-sm">
+                          Active {a.activeCount} / Waiting {a.waitingCount} / On Hold {a.onHoldCount}
+                        </span>
+                        {a.lastActivity && (
+                          <span className="text-zinc-400 text-xs">
+                            Last activity {Math.floor((Date.now() - new Date(a.lastActivity).getTime()) / (24 * 60 * 60 * 1000))}d ago
+                          </span>
+                        )}
+                      </div>
+                      {a.description && <p className="text-zinc-500 text-sm mb-2">{a.description}</p>}
+                      <div className="flex gap-2">
+                        <Link href={`/projects/new?areaId=${a.id}`} className="rounded border px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                          Create project
+                        </Link>
+                        <Link href={`/projects?area=${encodeURIComponent(a.id)}`} className="rounded border px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                          View projects
+                        </Link>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button type="button" onClick={() => goNext("W4A", 0, 0)} className="rounded bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 text-sm">
+                Next
+              </button>
             </>
           )}
         </div>

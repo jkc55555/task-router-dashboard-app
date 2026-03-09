@@ -2,28 +2,68 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { api, type Project } from "@/lib/api";
+import { useSearchParams } from "next/navigation";
+import { api, type Project, type AreaOfFocus } from "@/lib/api";
 
 export default function ProjectsPage() {
+  const searchParams = useSearchParams();
+  const areaParam = searchParams.get("area");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [areas, setAreas] = useState<AreaOfFocus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterAreaIds, setFilterAreaIds] = useState<string[]>([]);
+  const [groupByArea, setGroupByArea] = useState(false);
 
   useEffect(() => {
-    api.projects
-      .list()
-      .then(setProjects)
+    if (areaParam) setFilterAreaIds((prev) => (prev.includes(areaParam) ? prev : [areaParam]));
+  }, [areaParam]);
+
+  useEffect(() => {
+    Promise.all([api.projects.list(), api.areas.list()])
+      .then(([projList, areaList]) => {
+        setProjects(projList);
+        setAreas(areaList);
+      })
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
       .finally(() => setLoading(false));
   }, []);
 
   const projectTitle = (p: Project) => p.item?.title ?? p.outcomeStatement ?? "Untitled project";
-  const clarifying = projects.filter((p) => p.status === "CLARIFYING");
-  const focusProjects = projects.filter((p) => p.focusThisWeek);
-  const active = projects.filter((p) => p.status === "ACTIVE" && !p.focusThisWeek);
-  const waiting = projects.filter((p) => p.status === "WAITING");
-  const onHold = projects.filter((p) => p.status === "ON_HOLD" || p.status === "SOMEDAY");
-  const doneArchived = projects.filter((p) => p.status === "DONE" || p.status === "ARCHIVED");
+
+  const filteredProjects = useMemo(() => {
+    if (filterAreaIds.length === 0) return projects;
+    return projects.filter((p) => {
+      if (!p.areaId) return filterAreaIds.includes("__unassigned__");
+      return filterAreaIds.includes(p.areaId);
+    });
+  }, [projects, filterAreaIds]);
+
+  const toggleFilterArea = (id: string) => {
+    setFilterAreaIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const groupedByArea = useMemo(() => {
+    if (!groupByArea) return null;
+    const map = new Map<string | null, Project[]>();
+    map.set(null, []);
+    areas.forEach((a) => map.set(a.id, []));
+    filteredProjects.forEach((p) => {
+      const key = p.areaId ?? null;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(p);
+    });
+    return map;
+  }, [filteredProjects, areas, groupByArea]);
+
+  const clarifying = filteredProjects.filter((p) => p.status === "CLARIFYING");
+  const focusProjects = filteredProjects.filter((p) => p.focusThisWeek);
+  const active = filteredProjects.filter((p) => p.status === "ACTIVE" && !p.focusThisWeek);
+  const waiting = filteredProjects.filter((p) => p.status === "WAITING");
+  const onHold = filteredProjects.filter((p) => p.status === "ON_HOLD" || p.status === "SOMEDAY");
+  const doneArchived = filteredProjects.filter((p) => p.status === "DONE" || p.status === "ARCHIVED");
 
   const [showDone, setShowDone] = useState(false);
   const stalledCutoff = useMemo(() => {
@@ -48,8 +88,56 @@ export default function ProjectsPage() {
       {error && (
         <p className="text-red-600 dark:text-red-400 text-sm mb-4">{error}</p>
       )}
+      {areas.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="text-sm text-zinc-500">Filter by area:</span>
+          <button
+            type="button"
+            onClick={() => toggleFilterArea("__unassigned__")}
+            className={`rounded-full px-2 py-1 text-xs ${filterAreaIds.includes("__unassigned__") ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "border border-zinc-300 dark:border-zinc-600"}`}
+          >
+            Unassigned
+          </button>
+          {areas.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => toggleFilterArea(a.id)}
+              className={`rounded-full px-2 py-1 text-xs ${filterAreaIds.includes(a.id) ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "border border-zinc-300 dark:border-zinc-600"}`}
+            >
+              {a.name}
+            </button>
+          ))}
+          <label className="flex items-center gap-2 text-sm ml-2">
+            <input type="checkbox" checked={groupByArea} onChange={(e) => setGroupByArea(e.target.checked)} className="rounded" />
+            Group by area
+          </label>
+        </div>
+      )}
       {loading ? (
         <p className="text-zinc-500 dark:text-zinc-400">Loading...</p>
+      ) : groupByArea && groupedByArea ? (
+        <div className="space-y-6">
+          {Array.from(groupedByArea.entries()).map(([areaId, projs]) => {
+            if (projs.length === 0) return null;
+            const areaName = areaId ? areas.find((a) => a.id === areaId)?.name ?? "Unknown" : "Unassigned";
+            return (
+              <section key={areaId ?? "__unassigned__"} className="mb-6">
+                <h2 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-2">{areaName}</h2>
+                <ul className="space-y-2">
+                  {projs.map((p) => (
+                    <li key={p.id}>
+                      <Link href={`/projects/${p.id}`} className="text-zinc-900 dark:text-zinc-100 hover:underline">
+                        {projectTitle(p)}
+                      </Link>
+                      <span className="text-zinc-500 text-sm ml-2">({p.status})</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
       ) : (
         <>
           {clarifying.length > 0 && (

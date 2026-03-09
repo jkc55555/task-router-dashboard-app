@@ -207,7 +207,7 @@ export async function getWeeklySnapshot(userId: string) {
   };
 }
 
-export async function getWeeklyStep(stepId: string, userId: string): Promise<{ items: unknown[]; stepId: string }> {
+export async function getWeeklyStep(stepId: string, userId: string): Promise<{ items: unknown[]; stepId: string; stats?: { needingAttention: number; zeroActive: number; stale: number } }> {
   const now = new Date();
 
   if (stepId === "W2") {
@@ -255,6 +255,61 @@ export async function getWeeklyStep(stepId: string, userId: string): Promise<{ i
         hasFollowUp: i.reminders.some((r) => r.kind === "follow_up"),
         nextDue: i.reminders.find((r) => r.kind === "follow_up")?.dueAt ?? null,
       })),
+    };
+  }
+
+  if (stepId === "W4A") {
+    const staleThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const areas = await prisma.areaOfFocus.findMany({
+      where: { userId, archivedAt: null },
+      include: {
+        projects: {
+          where: { status: { notIn: ["DONE", "ARCHIVED"] } },
+          include: { item: true, nextActionTask: true },
+        },
+      },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    });
+    const items = areas.map((a) => {
+      const projects = a.projects;
+      const activeCount = projects.filter((p) => p.status === "ACTIVE").length;
+      const waitingCount = projects.filter((p) => p.status === "WAITING").length;
+      const onHoldCount = projects.filter((p) => p.status === "ON_HOLD" || p.status === "SOMEDAY").length;
+      const lastActivity = projects.reduce<Date | null>((acc, p) => {
+        const d = p.lastProgressAt ?? p.nextActionTask?.updatedAt ?? p.updatedAt;
+        return !acc || d > acc ? d : acc;
+      }, null);
+      const hasZeroActive = activeCount === 0;
+      const isStale = lastActivity != null && lastActivity < staleThreshold;
+      const onlyWaiting = activeCount === 0 && waitingCount > 0 && onHoldCount === 0;
+      return {
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        color: a.color,
+        activeCount,
+        waitingCount,
+        onHoldCount,
+        lastActivity: lastActivity?.toISOString() ?? null,
+        hasZeroActive,
+        isStale,
+        onlyWaiting,
+        projects: projects.map((p) => ({
+          id: p.id,
+          title: p.item?.title ?? p.outcomeStatement ?? "Untitled",
+          status: p.status,
+          nextActionText: p.nextActionTask?.actionText ?? null,
+          dueDate: p.dueDate?.toISOString() ?? null,
+        })),
+      };
+    });
+    const needingAttention = items.filter((i) => i.hasZeroActive || i.isStale || i.onlyWaiting).length;
+    const zeroActive = items.filter((i) => i.hasZeroActive).length;
+    const stale = items.filter((i) => i.isStale).length;
+    return {
+      stepId: "W4A",
+      items,
+      stats: { needingAttention, zeroActive, stale },
     };
   }
 

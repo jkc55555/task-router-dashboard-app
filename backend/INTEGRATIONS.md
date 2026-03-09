@@ -24,7 +24,7 @@ Users can enable a unique address (e.g. `inbox+token@parse.yourdomain.com`) to f
 | Variable | Description |
 |----------|-------------|
 | `INBOUND_EMAIL_ENABLED` | `true` to enable. Default: unset (disabled) |
-| `INBOUND_EMAIL_PROVIDER` | `sendgrid` or `resend`. Default: `sendgrid` |
+| `INBOUND_EMAIL_PROVIDER` | `sendgrid`, `resend`, or `postmark`. Default: `sendgrid` |
 | `INBOUND_PARSE_DOMAIN` | Domain for receiving (e.g. `parse.taskrouter.com`). Must match MX/receiving hostname |
 | `INBOUND_WEBHOOK_SECRET` | Optional. For SendGrid: webhook auth via `Authorization: Bearer <secret>` or `X-Webhook-Secret` |
 | `RESEND_API_KEY` | Required when using Resend. API key from Resend dashboard |
@@ -33,6 +33,8 @@ Users can enable a unique address (e.g. `inbox+token@parse.yourdomain.com`) to f
 **SendGrid:** Configure Inbound Parse to POST to `POST /webhooks/inbound-email`. MX record to `mx.sendgrid.net`.
 
 **Resend:** Create a webhook in Resend pointing to `POST /webhooks/resend`, subscribe to `email.received`. Add a receiving domain in Resend, set its hostname as `INBOUND_PARSE_DOMAIN`. Resend verifies webhooks with Svix signatures.
+
+**Postmark:** Configure Inbound webhook URL in Postmark (Server > Inbound Message Stream > Settings) to `POST /webhooks/postmark`. Use [Inbound Domain Forwarding](https://postmarkapp.com/developer/user-guide/inbound/inbound-domain-forwarding) for a custom domain (e.g. `in.alert-1.com`). Postmark does not sign webhooks; use `INBOUND_WEBHOOK_SECRET` with a custom header if Postmark supports it, or basic auth in the URL / IP whitelisting.
 
 ### Email (future — OAuth integrations)
 

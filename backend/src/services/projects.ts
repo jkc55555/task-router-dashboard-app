@@ -8,6 +8,7 @@ const projectInclude = {
   item: true,
   nextActionTask: true,
   tasks: true,
+  area: true,
 };
 
 export async function listProjects(userId: string) {
@@ -38,6 +39,7 @@ export async function createProject(
   userId: string,
   data: {
     itemId?: string;
+    areaId?: string | null;
     outcomeStatement?: string;
     nextActionText?: string;
     status?: ProjectStatus;
@@ -79,6 +81,7 @@ export async function createProject(
     data: {
       userId,
       itemId: hasItem ? data.itemId! : null,
+      areaId: data.areaId ?? null,
       outcomeStatement: outcome || null,
       status,
       nextActionTaskId: taskId,
@@ -173,6 +176,7 @@ export async function patchProject(
     nextActionTaskId?: string | null;
     nextActionText?: string;
     status?: ProjectStatus;
+    areaId?: string | null;
     dueDate?: string | null;
     priority?: number;
     focusThisWeek?: boolean;
@@ -195,6 +199,7 @@ export async function patchProject(
   }
   if (body.dueDate !== undefined) updates.dueDate = body.dueDate ? new Date(body.dueDate) : null;
   if (body.priority !== undefined) updates.priority = body.priority;
+  if (body.areaId !== undefined) updates.areaId = body.areaId ?? null;
   if (body.focusThisWeek !== undefined) updates.focusThisWeek = body.focusThisWeek;
   if (body.themeTag !== undefined) updates.themeTag = body.themeTag?.trim() ?? null;
   if (body.waitingOn !== undefined) updates.waitingOn = body.waitingOn?.trim() ?? null;

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { DropdownMenu } from "radix-ui";
 import { useTheme } from "next-themes";
-import { ChevronDown, LogOut, Palette, KeyRound } from "lucide-react";
+import { ChevronDown, LogOut, Palette, KeyRound, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -77,6 +77,14 @@ export function AccountMenu() {
             <div className="px-2 py-1.5 text-sm text-muted-foreground border-b border-border">
               Signed in as <span className="font-medium text-foreground truncate block">{user.email}</span>
             </div>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              onSelect={() => router.push("/settings")}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Settings className="size-4" />
+              Settings
+            </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               onSelect={(e) => {
