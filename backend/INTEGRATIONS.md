@@ -26,6 +26,7 @@ Users can enable a unique address (e.g. `inbox+token@parse.yourdomain.com`) to f
 | `INBOUND_EMAIL_ENABLED` | `true` to enable. Default: unset (disabled) |
 | `INBOUND_EMAIL_PROVIDER` | `sendgrid`, `resend`, or `postmark`. Default: `sendgrid` |
 | `INBOUND_PARSE_DOMAIN` | Domain for receiving (e.g. `parse.taskrouter.com`). Must match MX/receiving hostname |
+| `INBOUND_POSTMARK_MAILBOX` | Postmark only: mailbox ID (e.g. `8e933f1bb5228cf9c3a2cc65184da027`). Use with `INBOUND_PARSE_DOMAIN=inbound.postmarkapp.com` so users send to `{mailbox}+{token}@inbound.postmarkapp.com` |
 | `INBOUND_WEBHOOK_SECRET` | Optional. For SendGrid: webhook auth via `Authorization: Bearer <secret>` or `X-Webhook-Secret` |
 | `RESEND_API_KEY` | Required when using Resend. API key from Resend dashboard |
 | `RESEND_WEBHOOK_SECRET` | Required when using Resend. Signing secret from Resend webhook config (Svix) |
@@ -34,7 +35,7 @@ Users can enable a unique address (e.g. `inbox+token@parse.yourdomain.com`) to f
 
 **Resend:** Create a webhook in Resend pointing to `POST /webhooks/resend`, subscribe to `email.received`. Add a receiving domain in Resend, set its hostname as `INBOUND_PARSE_DOMAIN`. Resend verifies webhooks with Svix signatures.
 
-**Postmark:** Configure Inbound webhook URL in Postmark (Server > Inbound Message Stream > Settings) to `POST /webhooks/postmark`. Use [Inbound Domain Forwarding](https://postmarkapp.com/developer/user-guide/inbound/inbound-domain-forwarding) for a custom domain (e.g. `in.alert-1.com`). Postmark does not sign webhooks; use `INBOUND_WEBHOOK_SECRET` with a custom header if Postmark supports it, or basic auth in the URL / IP whitelisting.
+**Postmark:** Configure Inbound webhook URL in Postmark (Server > Inbound Message Stream > Settings) to `POST /webhooks/postmark`. Set `INBOUND_POSTMARK_MAILBOX` to your mailbox ID (e.g. `8e933f1bb5228cf9c3a2cc65184da027`) and `INBOUND_PARSE_DOMAIN=inbound.postmarkapp.com`. Users must send to `{mailbox}+{token}@inbound.postmarkapp.com` (the token is shown in Settings). Use [Inbound Domain Forwarding](https://postmarkapp.com/developer/user-guide/inbound/inbound-domain-forwarding) for a custom domain (e.g. `in.alert-1.com`). Postmark does not sign webhooks; use `INBOUND_WEBHOOK_SECRET` with a custom header if Postmark supports it, or basic auth in the URL / IP whitelisting.
 
 ### Email (future — OAuth integrations)
 

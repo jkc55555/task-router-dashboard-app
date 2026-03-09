@@ -3,7 +3,7 @@
  * Postmark sends JSON with Subject, TextBody, HtmlBody, Attachments (base64 Content).
  */
 
-import { extractInboxToken, type InboundEmailPayload } from "./inbound-email.js";
+import { extractInboxToken, extractTokenFromPlusAddress, type InboundEmailPayload } from "./inbound-email.js";
 
 export type PostmarkWebhookPayload = {
   From?: string;
@@ -43,9 +43,18 @@ export function parsePostmarkPayload(body: Record<string, unknown>): ParseResult
     return null;
   }
 
-  const token: string | null =
-    (typeof body.MailboxHash === "string" && body.MailboxHash.trim() ? body.MailboxHash.trim() : null) ??
-    extractInboxToken(recipient);
+  const recipientSource =
+    typeof body.OriginalRecipient === "string" ? "OriginalRecipient" :
+    Array.isArray(body.ToFull) && body.ToFull[0] ? "ToFull[0].Email" : "To";
+  console.log("[WEBHOOK] postmark parse: recipient from", recipientSource, "recipient=", recipient);
+
+  const mailboxHash = typeof body.MailboxHash === "string" && body.MailboxHash.trim() ? body.MailboxHash.trim() : null;
+  const inboxToken = extractInboxToken(recipient);
+  const plusToken = extractTokenFromPlusAddress(recipient);
+  const token: string | null = mailboxHash ?? inboxToken ?? plusToken;
+
+  const tokenSource = mailboxHash ? "MailboxHash" : inboxToken ? "extractInboxToken" : plusToken ? "extractTokenFromPlusAddress" : "none";
+  console.log("[WEBHOOK] postmark parse: token from", tokenSource, "token=", token ? "(present)" : "null");
 
   const subject = typeof body.Subject === "string" ? body.Subject : "";
   const from = typeof body.From === "string" ? body.From : "";

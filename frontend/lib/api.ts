@@ -506,9 +506,9 @@ export const api = {
   },
   settings: {
     getInboxEmail: () =>
-      fetchApi<{ enabled: boolean; address: string | null; parseDomainConfigured: boolean }>("/settings/inbox-email"),
+      fetchApi<{ enabled: boolean; address: string | null; parseDomainConfigured: boolean; postmarkMailboxConfigured?: boolean }>("/settings/inbox-email"),
     patchInboxEmail: (data: { enabled: boolean }) =>
-      fetchApi<{ enabled: boolean; address: string | null }>("/settings/inbox-email", {
+      fetchApi<{ enabled: boolean; address: string | null; postmarkMailboxConfigured?: boolean }>("/settings/inbox-email", {
         method: "PATCH",
         body: JSON.stringify(data),
       }),

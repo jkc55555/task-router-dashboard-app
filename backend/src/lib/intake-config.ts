@@ -67,6 +67,7 @@ export type InboundEmailConfig = {
   parseDomain: string;
   webhookSecret: string | null;
   provider: "sendgrid" | "resend" | "postmark" | "none";
+  postmarkMailbox: string | null;
   resendApiKey: string | null;
   resendWebhookSecret: string | null;
 };
@@ -76,6 +77,7 @@ export function getInboundEmailConfig(): InboundEmailConfig {
   const parseDomain = process.env.INBOUND_PARSE_DOMAIN || "";
   const webhookSecret = process.env.INBOUND_WEBHOOK_SECRET || null;
   const provider = (process.env.INBOUND_EMAIL_PROVIDER || "sendgrid") as "sendgrid" | "resend" | "postmark" | "none";
+  const postmarkMailbox = process.env.INBOUND_POSTMARK_MAILBOX?.trim() || null;
   const resendApiKey = process.env.RESEND_API_KEY || null;
   const resendWebhookSecret = process.env.RESEND_WEBHOOK_SECRET || null;
   return {
@@ -83,6 +85,7 @@ export function getInboundEmailConfig(): InboundEmailConfig {
     parseDomain,
     webhookSecret,
     provider,
+    postmarkMailbox,
     resendApiKey,
     resendWebhookSecret,
   };

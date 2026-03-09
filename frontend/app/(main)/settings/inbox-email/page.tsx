@@ -8,6 +8,7 @@ export default function InboxEmailSettingsPage() {
   const [enabled, setEnabled] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
   const [parseDomainConfigured, setParseDomainConfigured] = useState(false);
+  const [postmarkMailboxConfigured, setPostmarkMailboxConfigured] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -18,6 +19,7 @@ export default function InboxEmailSettingsPage() {
         setEnabled(data.enabled);
         setAddress(data.address);
         setParseDomainConfigured(data.parseDomainConfigured);
+        setPostmarkMailboxConfigured(data.postmarkMailboxConfigured ?? true);
       })
       .catch((e) => toast.error(e instanceof Error ? e.message : "Failed to load"))
       .finally(() => setLoading(false));
@@ -29,6 +31,7 @@ export default function InboxEmailSettingsPage() {
       const data = await api.settings.patchInboxEmail({ enabled: next });
       setEnabled(data.enabled);
       setAddress(data.address);
+      setPostmarkMailboxConfigured(data.postmarkMailboxConfigured ?? true);
       toast.success(next ? "Email-to-inbox enabled" : "Email-to-inbox disabled");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to update");
@@ -82,6 +85,17 @@ export default function InboxEmailSettingsPage() {
             {enabled ? "Email-to-inbox enabled" : "Email-to-inbox disabled"}
           </span>
         </div>
+
+        {enabled && !address && !postmarkMailboxConfigured && (
+          <div className="border border-amber-200 dark:border-amber-800 rounded-lg p-4 bg-amber-50 dark:bg-amber-900/20">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Postmark inbox address not configured</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              Your administrator must set INBOUND_POSTMARK_MAILBOX to your Postmark mailbox ID. Find it in Postmark under
+              Server → Inbound → Your inbound address (e.g. 8e933f1bb5228cf9c3a2cc65184da027@inbound.postmarkapp.com — use
+              the part before the @). Until then, no working address can be shown.
+            </p>
+          </div>
+        )}
 
         {enabled && address && (
           <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-2">

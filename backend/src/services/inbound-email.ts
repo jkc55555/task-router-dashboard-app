@@ -25,6 +25,19 @@ export function extractInboxToken(address: string): string | null {
   return match ? match[1] : null;
 }
 
+/** Extract token from plus-addressed local part (e.g. mailboxId+TOKEN@domain). Postmark fallback. */
+export function extractTokenFromPlusAddress(address: string): string | null {
+  if (!address || typeof address !== "string") return null;
+  const trimmed = address.trim();
+  const atIdx = trimmed.indexOf("@");
+  if (atIdx <= 0) return null;
+  const local = trimmed.slice(0, atIdx);
+  const plusIdx = local.lastIndexOf("+");
+  if (plusIdx < 0 || plusIdx === local.length - 1) return null;
+  const token = local.slice(plusIdx + 1);
+  return /^[a-zA-Z0-9_-]+$/.test(token) ? token : null;
+}
+
 /** Strip HTML tags to get plain text. Basic implementation. */
 function stripHtml(html: string): string {
   return html
@@ -50,6 +63,9 @@ export async function processInboundEmail(
 ): Promise<{ success: true; itemId: string } | { success: false; reason: string }> {
   const title = (payload.subject || "").trim() || "No subject";
   const body = (payload.text || "").trim() || (payload.html ? stripHtml(payload.html) : "");
+  const attachmentsCount = payload.attachments?.length ?? 0;
+  console.log("[INBOUND_EMAIL] processing", { userId, title, attachmentsCount });
+
   const attachments: Array<{ type: "file" | "image"; storageKey: string; url: string; filename: string; mimeType?: string; size?: number }> = [];
 
   if (payload.attachments && payload.attachments.length > 0) {
@@ -70,7 +86,7 @@ export async function processInboundEmail(
           size: att.buffer.length,
         });
       } catch (e) {
-        console.error("[INBOUND_EMAIL] Failed to upload attachment", att.filename, e);
+        console.error("[INBOUND_EMAIL] Failed to upload attachment", att.filename, "error:", e);
       }
     }
   }
@@ -82,6 +98,7 @@ export async function processInboundEmail(
       source: "email",
       attachments: attachments.length > 0 ? attachments : undefined,
     });
+    console.log("[INBOUND_EMAIL] created item", item.id, "for user", userId);
     return { success: true, itemId: item.id };
   } catch (e) {
     console.error("[INBOUND_EMAIL] createItem failed", e);

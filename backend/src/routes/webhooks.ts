@@ -218,25 +218,50 @@ webhooksRouter.post("/resend", async (req: Request, res: Response) => {
 /** POST /webhooks/postmark - Postmark inbound webhook (JSON, body + attachments inline) */
 webhooksRouter.post("/postmark", async (req: Request, res: Response) => {
   try {
+    const body = req.body as Record<string, unknown>;
+    const recipient = typeof body.To === "string" ? body.To : (body.OriginalRecipient as string) ?? "";
+    const mailboxHash = typeof body.MailboxHash === "string" ? body.MailboxHash : undefined;
+    const subjectLen = typeof body.Subject === "string" ? body.Subject.length : 0;
+    const hasAttachments = Array.isArray(body.Attachments) && body.Attachments.length > 0;
+    console.log("[WEBHOOK] postmark received", {
+      recipient,
+      MailboxHash: mailboxHash ?? "(empty)",
+      subjectLen,
+      hasAttachments,
+    });
+
     const config = getInboundEmailConfig();
     if (!config.enabled || config.provider !== "postmark") {
+      console.log("[WEBHOOK] postmark rejected: config", {
+        enabled: config.enabled,
+        provider: config.provider,
+        parseDomain: config.parseDomain ? "(set)" : "(empty)",
+      });
       return res.status(404).json({ error: "Postmark inbound not enabled" });
     }
 
     if (!verifyWebhookSecret(req)) {
+      console.log("[WEBHOOK] postmark rejected: webhook secret mismatch");
       return res.status(401).json({ error: "Invalid webhook secret" });
     }
 
-    const body = req.body as Record<string, unknown>;
     const parsed = parsePostmarkPayload(body);
     if (!parsed) {
-      console.log("[WEBHOOK] postmark: no valid recipient in payload");
+      console.log("[WEBHOOK] postmark rejected: parse failed", {
+        To: body.To,
+        OriginalRecipient: body.OriginalRecipient,
+        ToFullFirst: Array.isArray(body.ToFull) && body.ToFull[0] ? body.ToFull[0] : undefined,
+      });
       return res.status(200).send();
     }
 
     const { payload, token } = parsed;
     if (!token) {
-      console.log("[WEBHOOK] postmark: no token (MailboxHash or inbox+token format)", payload.to);
+      console.log("[WEBHOOK] postmark rejected: no token", {
+        recipient: payload.to,
+        MailboxHash: body.MailboxHash,
+        hint: "Address must include +TOKEN, e.g. mailboxId+TOKEN@inbound.postmarkapp.com",
+      });
       return res.status(200).send();
     }
 
@@ -244,8 +269,14 @@ webhooksRouter.post("/postmark", async (req: Request, res: Response) => {
       where: { inboxEmailToken: token, inboxEmailEnabled: true },
       select: { id: true },
     });
+    const enabledCount = await prisma.user.count({
+      where: { inboxEmailEnabled: true },
+    });
     if (!user) {
-      console.log("[WEBHOOK] postmark: no user found for token");
+      console.log("[WEBHOOK] postmark rejected: no user for token", {
+        tokenPreview: token.slice(0, 4) + "...",
+        usersWithInboxEnabled: enabledCount,
+      });
       return res.status(200).send();
     }
 
@@ -258,7 +289,7 @@ webhooksRouter.post("/postmark", async (req: Request, res: Response) => {
     console.log("[WEBHOOK] postmark created item", result.itemId, "for user", user.id);
     return res.status(200).json({ ok: true, itemId: result.itemId });
   } catch (e) {
-    console.error("[WEBHOOK] postmark error", e);
+    console.error("[WEBHOOK] postmark error", e instanceof Error ? e.stack : e);
     return res.status(500).json({ error: "Internal error" });
   }
 });

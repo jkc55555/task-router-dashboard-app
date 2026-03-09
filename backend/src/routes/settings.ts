@@ -29,11 +29,17 @@ settingsRouter.get("/inbox-email", requireAuth, async (req: Request, res: Respon
     }
     const enabled = user.inboxEmailEnabled ?? false;
     const token = user.inboxEmailToken;
+    const postmarkMailboxConfigured = config.provider === "postmark" && !!config.postmarkMailbox;
     let address: string | null = null;
     if (config.enabled && config.parseDomain && enabled && token) {
-      address = `inbox+${token}@${config.parseDomain}`;
+      if (config.provider === "postmark" && config.postmarkMailbox) {
+        address = `${config.postmarkMailbox}+${token}@${config.parseDomain}`;
+      } else if (config.provider !== "postmark") {
+        address = `inbox+${token}@${config.parseDomain}`;
+      }
+      // Postmark without mailbox: address stays null (inbox+token does not work for Postmark)
     }
-    return res.json({ enabled, address, parseDomainConfigured: !!config.parseDomain });
+    return res.json({ enabled, address, parseDomainConfigured: !!config.parseDomain, postmarkMailboxConfigured });
   } catch (e) {
     console.error("[SETTINGS] GET inbox-email error", e);
     return res.status(500).json({ error: "Failed to load inbox email settings" });
@@ -78,11 +84,16 @@ settingsRouter.patch("/inbox-email", requireAuth, async (req: Request, res: Resp
     });
 
     const config = getInboundEmailConfig();
+    const postmarkMailboxConfigured = config.provider === "postmark" && !!config.postmarkMailbox;
     let address: string | null = null;
     if (config.enabled && config.parseDomain && updated.inboxEmailEnabled && updated.inboxEmailToken) {
-      address = `inbox+${updated.inboxEmailToken}@${config.parseDomain}`;
+      if (config.provider === "postmark" && config.postmarkMailbox) {
+        address = `${config.postmarkMailbox}+${updated.inboxEmailToken}@${config.parseDomain}`;
+      } else if (config.provider !== "postmark") {
+        address = `inbox+${updated.inboxEmailToken}@${config.parseDomain}`;
+      }
     }
-    return res.json({ enabled: updated.inboxEmailEnabled, address });
+    return res.json({ enabled: updated.inboxEmailEnabled, address, postmarkMailboxConfigured });
   } catch (e) {
     console.error("[SETTINGS] PATCH inbox-email error", e);
     return res.status(500).json({ error: "Failed to update inbox email settings" });
