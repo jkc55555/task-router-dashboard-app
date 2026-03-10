@@ -27,28 +27,44 @@ export type ParseResult = {
   token: string | null;
 };
 
+/** Extract bare email from "Name" <email@domain> or return as-is if no angle brackets. */
+function extractEmailFromRecipient(s: string): string {
+  const trimmed = s.trim();
+  const angleStart = trimmed.indexOf("<");
+  const angleEnd = trimmed.indexOf(">");
+  if (angleStart >= 0 && angleEnd > angleStart) {
+    return trimmed.slice(angleStart + 1, angleEnd).trim();
+  }
+  return trimmed;
+}
+
 /**
  * Parse Postmark inbound webhook body into InboundEmailPayload and extract user token.
- * Prefer MailboxHash when present; otherwise use extractInboxToken on recipient address.
+ * Per Postmark docs: prefer ToFull[0].Email and ToFull[0].MailboxHash; fall back to OriginalRecipient/To and top-level MailboxHash.
+ * See https://postmarkapp.com/developer/user-guide/inbound/parse-an-email
  */
 export function parsePostmarkPayload(body: Record<string, unknown>): ParseResult | null {
-  const recipient =
+  const toFull0 = Array.isArray(body.ToFull) && body.ToFull[0] ? (body.ToFull[0] as { Email?: string; MailboxHash?: string }) : null;
+  const rawRecipient =
+    (toFull0 && typeof toFull0.Email === "string" ? toFull0.Email : null) ??
     (typeof body.OriginalRecipient === "string" ? body.OriginalRecipient : null) ??
-    (Array.isArray(body.ToFull) && body.ToFull[0] && typeof (body.ToFull[0] as { Email?: string }).Email === "string"
-      ? (body.ToFull[0] as { Email: string }).Email
-      : null) ??
     (typeof body.To === "string" ? body.To : null);
 
-  if (!recipient || typeof recipient !== "string") {
+  if (!rawRecipient || typeof rawRecipient !== "string") {
     return null;
   }
 
-  const recipientSource =
-    typeof body.OriginalRecipient === "string" ? "OriginalRecipient" :
-    Array.isArray(body.ToFull) && body.ToFull[0] ? "ToFull[0].Email" : "To";
+  const recipient = extractEmailFromRecipient(rawRecipient);
+  if (!recipient || !recipient.includes("@")) {
+    return null;
+  }
+
+  const recipientSource = toFull0?.Email ? "ToFull[0].Email" : typeof body.OriginalRecipient === "string" ? "OriginalRecipient" : "To";
   console.log("[WEBHOOK] postmark parse: recipient from", recipientSource, "recipient=", recipient);
 
-  const mailboxHash = typeof body.MailboxHash === "string" && body.MailboxHash.trim() ? body.MailboxHash.trim() : null;
+  const mailboxHash =
+    (toFull0 && typeof toFull0.MailboxHash === "string" && toFull0.MailboxHash.trim() ? toFull0.MailboxHash.trim() : null) ??
+    (typeof body.MailboxHash === "string" && body.MailboxHash.trim() ? body.MailboxHash.trim() : null);
   const inboxToken = extractInboxToken(recipient);
   const plusToken = extractTokenFromPlusAddress(recipient);
   const token: string | null = mailboxHash ?? inboxToken ?? plusToken;
