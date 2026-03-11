@@ -83,6 +83,9 @@ app.use((req, _res, next) => {
     bodySummary = ` bodySummary: titleLen=${title.length} source=${source || "(none)"} bodyLen=${bodyLen} attachments=${attachments}`;
   }
   console.log(`${ts} ${method} ${pathWithQuery}${bodySummary}`);
+  if ((pathWithQuery === "/webhooks/postmark" || pathWithQuery.startsWith("/webhooks/postmark")) && method === "POST") {
+    console.log("[WEBHOOK] postmark REQUEST LOGGED", method, pathWithQuery, "contentType=", req.headers["content-type"]);
+  }
   next();
 });
 
