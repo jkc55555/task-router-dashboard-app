@@ -34,6 +34,10 @@ export default function ProjectDetailPage() {
   const [markDoneLoading, setMarkDoneLoading] = useState(false);
   const [markDoneError, setMarkDoneError] = useState<string | null>(null);
   const [areas, setAreas] = useState<{ id: string; name: string }[]>([]);
+  const [suggestedNextAction, setSuggestedNextAction] = useState<string | null>(null);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
+  const [useSuggestionLoading, setUseSuggestionLoading] = useState(false);
 
   const fetchProject = useCallback(() => {
     if (!id) return;
@@ -119,6 +123,42 @@ export default function ProjectDetailPage() {
       setProject((p) => (p ? { ...p, themeTag: value || null } : null));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Update failed");
+    }
+  };
+
+  const handleGetSuggestion = async () => {
+    if (!project) return;
+    setSuggestLoading(true);
+    setSuggestedNextAction(null);
+    setSuggestError(null);
+    try {
+      const res = await api.projects.suggestNextAction(id);
+      setSuggestedNextAction(res.suggestedNextAction ?? null);
+      if (!res.suggestedNextAction) {
+        setSuggestError("AI could not generate a suggestion. Check that WORKER_AI_API_KEY is set.");
+        toast.error("Could not generate suggestion");
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to get suggestion";
+      setSuggestError(msg);
+      toast.error(msg);
+    } finally {
+      setSuggestLoading(false);
+    }
+  };
+
+  const handleUseSuggestion = async () => {
+    if (!project || !suggestedNextAction) return;
+    setUseSuggestionLoading(true);
+    try {
+      await api.projects.patch(id, { nextActionText: suggestedNextAction.trim() });
+      setSuggestedNextAction(null);
+      fetchProject();
+      toast.success("Next action added");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to add next action");
+    } finally {
+      setUseSuggestionLoading(false);
     }
   };
 
@@ -371,10 +411,48 @@ export default function ProjectDetailPage() {
       <h2 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-2">
         Next Action {project.status === "ACTIVE" ? "(required)" : ""}
       </h2>
-      {hasNoNextAction && project.status === "ACTIVE" ? (
-        <p className="text-amber-600 dark:text-amber-400 text-sm mb-2">
-          This project needs a next action before it can be active.
-        </p>
+      {hasNoNextAction ? (
+        <div className="space-y-2 mb-4">
+          {project.status === "ACTIVE" && (
+            <p className="text-amber-600 dark:text-amber-400 text-sm">
+              This project needs a next action before it can be active.
+            </p>
+          )}
+          {(project.outcomeStatement?.trim().length ?? 0) >= 5 ? (
+            <>
+              <button
+                type="button"
+                onClick={handleGetSuggestion}
+                disabled={suggestLoading}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+              >
+                {suggestLoading ? "Getting suggestion…" : "Get AI suggestion"}
+              </button>
+              {suggestError && (
+                <p className="text-sm text-red-600 dark:text-red-400">{suggestError}</p>
+              )}
+              {suggestedNextAction && (
+                <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 space-y-2">
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300">
+                    Suggested: <strong className="text-zinc-900 dark:text-zinc-100">{suggestedNextAction}</strong>
+                  </p>
+                  <Button
+                    size="sm"
+                    onClick={handleUseSuggestion}
+                    disabled={useSuggestionLoading}
+                    className="bg-accent text-accent-foreground hover:bg-accent/90"
+                  >
+                    {useSuggestionLoading ? "Adding…" : "Use this"}
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+              Add an outcome statement (min 5 characters) to get AI suggestions.
+            </p>
+          )}
+        </div>
       ) : nextAction ? (
         <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 mb-4">
           <p className="font-medium text-zinc-900 dark:text-zinc-100">

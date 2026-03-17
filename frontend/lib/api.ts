@@ -378,6 +378,11 @@ export const api = {
       fetchApi<Project>(`/projects/${id}/complete`, { method: "POST", body: JSON.stringify(data) }),
     assignItem: (projectId: string, itemId: string) =>
       fetchApi<Project>(`/projects/${projectId}/assign`, { method: "POST", body: JSON.stringify({ itemId }) }),
+    suggestNextAction: (id: string) =>
+      fetchApi<{ suggestedNextAction: string | null; metadata?: { context?: string; energy?: string; timeEstimateMinutes?: number } }>(
+        `/projects/${id}/suggest-next-action`,
+        { method: "POST", body: JSON.stringify({}) }
+      ),
   },
   areas: {
     list: (includeArchived?: boolean) =>

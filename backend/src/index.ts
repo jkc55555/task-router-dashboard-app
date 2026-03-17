@@ -36,6 +36,16 @@ app.use(
     credentials: true,
   })
 );
+// Webhooks (Postmark, Resend) can send large JSON payloads (e.g. base64 attachments). Use 10MB for /webhooks only.
+app.use(
+  "/webhooks",
+  express.json({
+    limit: "10mb",
+    verify: (req, _res, buf) => {
+      (req as { rawBody?: Buffer }).rawBody = buf;
+    },
+  })
+);
 app.use(
   express.json({
     verify: (req, _res, buf) => {

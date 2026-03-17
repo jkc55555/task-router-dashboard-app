@@ -93,3 +93,70 @@ export async function classifyItem(title: string, body: string): Promise<WorkerO
   const parsed = JSON.parse(raw) as WorkerOutput;
   return parsed;
 }
+
+export type ProjectNextActionSuggestion = {
+  suggestedNextAction: string | null;
+  metadata?: { context?: string; energy?: string; timeEstimateMinutes?: number };
+};
+
+const PROJECT_NEXT_ACTION_SYSTEM = `You are a GTD-style assistant. Given a project outcome and context, suggest ONE concrete next action.
+Rules: Start with a verb (call, email, draft, research, schedule, etc.). Reference a specific object (person, file, tool). No placeholders like "TBD", "figure out", "work on", "handle". The action must be doable in one sitting.`;
+
+export async function suggestProjectNextAction(
+  outcomeStatement: string,
+  options?: { completedTasks?: string[]; itemTitle?: string; itemBody?: string }
+): Promise<ProjectNextActionSuggestion> {
+  if (!openai) {
+    return { suggestedNextAction: null };
+  }
+
+  const completed = options?.completedTasks?.length ? options.completedTasks : [];
+  const itemCtx =
+    options?.itemTitle || options?.itemBody
+      ? `\n\nItem: ${options.itemTitle ?? "Untitled"}\n${options.itemBody ?? ""}`
+      : "";
+  const completedCtx =
+    completed.length > 0 ? `\n\nCompleted steps:\n${completed.map((t) => `- ${t}`).join("\n")}` : "";
+
+  const userContent = `Outcome: ${outcomeStatement}${itemCtx}${completedCtx}\n\nSuggest the next concrete action.`;
+
+  const response = await openai.chat.completions.create({
+    model: workerModel,
+    messages: [
+      { role: "system", content: PROJECT_NEXT_ACTION_SYSTEM },
+      { role: "user", content: userContent },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "project_next_action",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            suggestedNextAction: { type: ["string", "null"] },
+            metadata: {
+              type: "object",
+              properties: {
+                context: { type: "string", enum: ["calls", "errands", "computer", "deep_work"] },
+                energy: { type: "string", enum: ["low", "medium", "high"] },
+                timeEstimateMinutes: { type: "number" },
+              },
+              additionalProperties: false,
+            },
+          },
+          required: ["suggestedNextAction"],
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+
+  const raw = response.choices[0]?.message?.content;
+  if (!raw) return { suggestedNextAction: null };
+  const parsed = JSON.parse(raw) as { suggestedNextAction: string | null; metadata?: ProjectNextActionSuggestion["metadata"] };
+  return {
+    suggestedNextAction: parsed.suggestedNextAction?.trim() || null,
+    metadata: parsed.metadata,
+  };
+}

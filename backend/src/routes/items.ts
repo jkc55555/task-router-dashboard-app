@@ -150,14 +150,23 @@ itemsRouter.patch("/items/:id", async (req: Request, res: Response) => {
 itemsRouter.post("/items/:id/classify", async (req: Request, res: Response) => {
   const userId = (req.session as { userId?: string }).userId;
   if (!userId) return res.status(401).json({ error: "Unauthorized" });
+  const itemId = req.params.id;
   try {
-    const item = await itemsService.getItem(req.params.id, userId);
-    if (!item) return res.status(404).json({ error: "Not found" });
+    const item = await itemsService.getItem(itemId, userId);
+    if (!item) {
+      console.log("[CLASSIFY] item not found", { itemId, userId });
+      return res.status(404).json({ error: "Not found" });
+    }
+    console.log("[CLASSIFY] starting", { itemId, titleLen: item.title?.length ?? 0 });
     const { classifyItem } = await import("../ai/worker.js");
     const result = await classifyItem(item.title, item.body);
+    console.log("[CLASSIFY] success", { itemId, suggestedType: result.suggestedType });
     res.json(result);
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    const msg = e instanceof Error ? e.message : String(e);
+    const stack = e instanceof Error ? e.stack : undefined;
+    console.error("[CLASSIFY] error", { itemId, message: msg, stack });
+    res.status(500).json({ error: msg });
   }
 });
 

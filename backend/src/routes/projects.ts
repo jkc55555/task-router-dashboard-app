@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { getAllowedProjectTransitions } from "../lib/project-transition-rules.js";
 import * as projectsService from "../services/projects.js";
+import { suggestProjectNextAction } from "../ai/worker.js";
 
 export const projectsRouter = Router();
 
@@ -59,6 +60,34 @@ projectsRouter.get("/:id", async (req: Request, res: Response) => {
     if (!project) return res.status(404).json({ error: "Not found" });
     res.json(project);
   } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+projectsRouter.post("/:id/suggest-next-action", async (req: Request, res: Response) => {
+  const userId = (req.session as { userId?: string }).userId;
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
+  try {
+    const project = await projectsService.getProject(req.params.id, userId);
+    if (!project) return res.status(404).json({ error: "Not found" });
+    const outcome = project.outcomeStatement?.trim();
+    if (!outcome || outcome.length < 5) {
+      return res.status(400).json({ error: "Outcome statement required (min 5 chars) to suggest next action" });
+    }
+    const completedTasks = (project.tasks ?? [])
+      .filter((t) => t.status === "completed")
+      .map((t) => t.actionText);
+    const itemTitle = project.item?.title;
+    const itemBody = project.item?.body ?? undefined;
+    const result = await suggestProjectNextAction(outcome, {
+      completedTasks: completedTasks.length > 0 ? completedTasks : undefined,
+      itemTitle: itemTitle ?? undefined,
+      itemBody,
+    });
+    console.log("[API] suggest-next-action projectId=%s hasSuggestion=%s", req.params.id, !!result.suggestedNextAction);
+    res.json(result);
+  } catch (e) {
+    console.error("[API] suggest-next-action error", req.params.id, e instanceof Error ? e.message : e);
     res.status(500).json({ error: String(e) });
   }
 });
